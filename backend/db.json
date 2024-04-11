@@ -1,0 +1,28 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "name": "John Doe",
+      "email": "johndoe@example.com"
+    },
+    {
+      "id": 2,
+      "name": "Jane Smith",
+      "email": "janesmith@example.com"
+    }
+  ],
+  "dreams": [
+    {
+      "id": 1,
+      "userId": 1,
+      "title": "Flying in the sky",
+      "description": "I had a dream where I was flying above the clouds."
+    },
+    {
+      "id": 2,
+      "userId": 2,
+      "title": "Meeting a celebrity",
+      "description": "I dreamt that I met my favorite actor and we had a conversation."
+    }
+  ]
+}
