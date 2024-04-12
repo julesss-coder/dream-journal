@@ -16,13 +16,29 @@
       "id": 1,
       "userId": 1,
       "title": "Flying in the sky",
-      "description": "I had a dream where I was flying above the clouds."
+      "description": "I had a dream where I was flying above the clouds.",
+      "tags": ["flying"]
     },
     {
       "id": 2,
       "userId": 2,
       "title": "Meeting a celebrity",
-      "description": "I dreamt that I met my favorite actor and we had a conversation."
+      "description": "I dreamt that I met my favorite actorChristian Bale and we had a conversation.",
+      "tags": ["celebrity"]
+    },
+    {
+      "id": 3,
+      "userId": 2,
+      "title": "Winning the lottery",
+      "description": "I dreamt that I won the lottery jackpot without even playing.",
+      "tags": ["winning", "money", "lottery"]
+    },
+    {
+      "id": 4,
+      "userId": 2,
+      "title": "Regular day",
+      "description": "I dreamt that I lived through a regular day at work. All was normal except that I had a different history from my real self. All my relationships were different and I felt more confident.",
+      "tags": ["alternate reality", "daily life"]
     }
   ]
 }
