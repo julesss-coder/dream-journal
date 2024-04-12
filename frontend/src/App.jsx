@@ -1,4 +1,9 @@
 import React, { useEffect, useState } from 'react';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import Button from '@mui/material/Button';
+
+const theme = createTheme();
+
 
 function App() {
   const [dreams, setDreams] = useState(null);
@@ -24,19 +29,21 @@ function App() {
   console.log("dreams: ", dreams);
 
   return (
-    <div>
+    <ThemeProvider theme={theme}>
+      <Button variant="contained" color="primary">
+        Hello World
+      </Button>
       <button>Dreams</button>
       <button>Analyze</button>
       <div className="tagcloud">Tag cloud</div>
       <div className="dreams-list">
         {dreams && dreams.map(dream => {
           return (
-            <div key={dream.id}>{dream.title}, {dream.dateCreated}</div>
+            <div key={dream.id}>{dream.title}, {dream.createDate}</div>
           )
         })}
       </div>
-      <button>Add dream</button>
-    </div>
+    </ThemeProvider>
   );
 }
 
