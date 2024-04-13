@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
-import Button from '@mui/material/Button';
-
-const theme = createTheme();
+import Typography from '@mui/joy/Typography';
+import Box from '@mui/joy/Box';
+import BottomNavigation from '@mui/material/BottomNavigation';
+import BottomNavigationAction from '@mui/material/BottomNavigationAction';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import BubbleChartIcon from '@mui/icons-material/BubbleChart';
 
 
 function App() {
@@ -29,21 +31,33 @@ function App() {
   console.log("dreams: ", dreams);
 
   return (
-    <ThemeProvider theme={theme}>
-      <Button variant="contained" color="primary">
-        Hello World
-      </Button>
-      <button>Dreams</button>
-      <button>Analyze</button>
-      <div className="tagcloud">Tag cloud</div>
-      <div className="dreams-list">
-        {dreams && dreams.map(dream => {
-          return (
-            <div key={dream.id}>{dream.title}, {dream.createDate}</div>
-          )
-        })}
-      </div>
-    </ThemeProvider>
+    <Box 
+      component="main"
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100vh",
+        width: "100%",
+        bgcolor: "lightgray",
+      }}  
+    >
+      <Typography>
+        Test
+      </Typography>
+      <BottomNavigation
+        showLabels
+        sx={{
+          position: "fixed",
+          top: "auto", 
+          bottom: 0,
+          width: "100%"
+        }}
+      >
+        <BottomNavigationAction label="Add dream" icon={<AddCircleOutlineIcon/>} />
+        <BottomNavigationAction label="Analyze" icon={<BubbleChartIcon />} />
+      </BottomNavigation>
+    </Box>
+    
   );
 }
 
