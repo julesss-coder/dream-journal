@@ -20,6 +20,7 @@ import Search from '@mui/icons-material/Search';
 function App() {
   const [dreams, setDreams] = useState(null);
   const [open, setOpen] = React.useState(false);
+  const [selectedDreamId, setSelectedDreamId] = useState(null);
 
   useEffect(() => {
     const fetchDreams = async () => {
@@ -38,6 +39,12 @@ function App() {
 
     fetchDreams();
   }, []);
+
+  const handleDreamClick = (dreamId, e) => {
+    console.log("handleDreamClick() runs, dreamId: ", dreamId, e);
+    setSelectedDreamId(dreamId);
+    setOpen(false);
+  };
 
   console.log("dreams: ", dreams);
 
@@ -138,7 +145,12 @@ function App() {
         >
           {
             dreams && dreams.map(dream => (
-              <ListItemButton>{dream.title}</ListItemButton>
+            <ListItemButton
+              key={dream.id}
+              onClick={(e) => handleDreamClick(dream.id, e)}
+            >
+              {dream.title}
+            </ListItemButton>
             ))
           }
         </List>
@@ -155,17 +167,37 @@ function App() {
           width: '100%'
         }}
       >
-        {/* Should this be a form component so the user can edit the individual subcategories of the dream? */}
-        <Typography 
-          level="title-lg"
-          color="primary" 
-          variant="plain"
-        >
-          Dream title
-        </Typography>
-        <Typography level="body-sm">Create date: </Typography>
-        <Typography level="body-sm">Last edited: </Typography>
-        <Typography level="body-md">Dream content</Typography>
+        {
+          selectedDreamId === null && <Typography>No dream selected.</Typography>
+        }
+        {
+          selectedDreamId && (
+            dreams.filter(dream => (
+              dream.id === selectedDreamId
+            )).map(dream => (
+              <React.Fragment key={dream.id}>
+                {/* Should this be a form component so the user can edit the individual subcategories of the dream? */}
+                <Typography 
+                  level="title-lg"
+                  color="primary" 
+                  variant="plain"
+                  >
+                  {dream.title}
+                </Typography>
+                <Typography level="body-sm">Create date: {dream.dateCreated} </Typography>
+                <Typography level="body-sm">Last edited: {dream.lastEdited}</Typography>
+                <Typography level="body-md">{dream.description}</Typography>
+                <Typography>Tags:  
+                  {dream.tags.map((tag, index) => (
+                    <span key={index}>#{tag}</span>
+                  ))}
+                </Typography>
+              </React.Fragment>
+
+            ))
+
+          )
+        }
       </Box>    
 
       {/* Bottom Nav */}
