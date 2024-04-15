@@ -53,6 +53,7 @@ function App() {
         // bgcolor: "lightgray",
       }}  
     >
+      {/* Sider menu icon */}
       <IconButton 
         variant="outlined" 
         color="neutral" 
@@ -63,6 +64,7 @@ function App() {
       >
         <Menu />
       </IconButton>
+      {/* Sider */}
       <Drawer 
         open={open} 
         onClose={() => setOpen(false)}
@@ -141,6 +143,32 @@ function App() {
           }
         </List>
       </Drawer>
+      
+      {/* Dream editor */}
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 0.5,
+          m: 2,
+          height: '100%', 
+          width: '100%'
+        }}
+      >
+        {/* Should this be a form component so the user can edit the individual subcategories of the dream? */}
+        <Typography 
+          level="title-lg"
+          color="primary" 
+          variant="plain"
+        >
+          Dream title
+        </Typography>
+        <Typography level="body-sm">Create date: </Typography>
+        <Typography level="body-sm">Last edited: </Typography>
+        <Typography level="body-md">Dream content</Typography>
+      </Box>    
+
+      {/* Bottom Nav */}
       <BottomNavigation
         showLabels
         sx={{
