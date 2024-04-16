@@ -1,8 +1,8 @@
 VERSION 1
 
 It should give the user the option of
-- displaying the stored dreams
-- creating a dream entry, containing the creation date, keywords (jot down upon waking up from dream), tags (#topic, #type (like nightmare, lucid)), dream report, thoughts (interpretation, thoughts) about the dream
+- [x] displaying the stored dreams
+- [ ] creating a dream entry, containing the creation date, keywords (jot down upon waking up from dream), tags (#topic, #type (like nightmare, lucid)), dream report, thoughts (interpretation, thoughts) about the dream
   - big "+" symbol
   - autocreate date and time of writing dream note
   - give prompts (questions), but also general notes field
