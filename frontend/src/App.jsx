@@ -15,8 +15,7 @@ import ListItemButton from '@mui/joy/ListItemButton';
 import Search from '@mui/icons-material/Search';
 import FormControl from '@mui/joy/FormControl';
 import InputLabel from '@mui/material/InputLabel';
-
-
+import FormHelperText from '@mui/joy/FormHelperText';
 
 
 
@@ -25,6 +24,8 @@ function App() {
   const [dreams, setDreams] = useState([]);
   const [open, setOpen] = React.useState(false);
   const [selectedDreamId, setSelectedDreamId] = useState(null);
+
+  let timer;
 
   
 
@@ -80,19 +81,39 @@ function App() {
     "description": "",
     "tags": [],
     "dateCreated": new Date(Date.now()).toUTCString(),
-    "lastEdited": new Date(Date.now()).toUTCString(),
+    "lastEdited": null,
    };
 
    setDreams(prevDreams => [...prevDreams, newDream]);
    setSelectedDreamId(newDreamId);
   };
 
-  const handleFormInput = (dreamId, prop, e) => {
-    console.log("handleFormInput() runs, dreamId: ", dreamId, prop, e);
-    /*
-      On every input, input is added to title
+  // const handleFormInput = setTimeout((dreamId, prop, e) => {
+  //   console.log("handleFormInput() runs, dreamId: ", dreamId, prop, e);
+  //   /*
+  //     On every input, input is added to title
 
-    */
+  //   */
+  // }, 1000);
+  // const handleFormInput = (dreamId, prop, e) => setTimeout(() => {
+  //   console.log("handleFormInput() runs, dreamId: ", dreamId, prop, e);
+  // }, 1000);
+
+  const handleFormInput = (dreamId, prop, value) => {
+    console.log("handleFormInput() runs");
+    setDreams(prevDreams => {
+      return prevDreams.map(dream => {
+        if (dream.id === dreamId) {
+          return {
+            ...dream, 
+            [prop]: value,
+            lastEdited: new Date(Date.now()).toUTCString()
+          };
+        } else {
+          return dream;
+        }
+      });
+    });
   };
 
   console.log("dreams: ", dreams);
@@ -221,63 +242,87 @@ function App() {
         {
           selectedDreamId === null && <Typography>No dream selected.</Typography>
         }
+        {/* 
+        
+          On change (with debounce): 
+            Inhalt speichern im State
+          Vor Rerender: 
+            Überarbeiteten Traum in Datenbank speichern (in der Cleanup function)
+        
+        */}
         {
           selectedDreamId && (
             dreams.filter(dream => (
               dream.id === selectedDreamId
             )).map(dream => (
               <React.Fragment key={dream.id}>
-
-              <FormControl
-                onChange={(e) => handleFormInput(dream.id, "title", e)}
-              >
-                <InputLabel htmlFor="dream-title">Dream title</InputLabel>
-                <Input 
-                  id="dream-title" 
-                  value={dream.title}
-                  variant='soft'
-                  placeholder='Dream title'
-                  multiline
-                  fullWidth 
-                  />
-              </FormControl>
-              <FormControl>
-                <InputLabel htmlFor="date-created">Date created: </InputLabel>
-                <Input 
-                  disabled
-                  id="date-created"
-                  value={dream.dateCreated}
-                  ></Input>
-              </FormControl>
-              <FormControl>
-                <InputLabel htmlFor="last-edited">Last edited: </InputLabel>
-                <Input 
-                  disabled 
-                  id="last-edited"
-                  value={dream.lastEdited}
+                  <FormControl
+                    onChange={(e) => {
+                      clearTimeout(timer);
+                      timer = setTimeout(() => {
+                        // Passing in e.target.value instead of `e`, as `e` is nullified after `handleFormInput` is invoked. `setTimeout` then runs with nullified event object, so that `e.target.value` does not contain user input.
+                        handleFormInput(dream.id, "title", e.target.value);
+                      }, 1000);
+                    }}
                   >
-                  {dream.lastEdited}
-                </Input>
-              </FormControl>
-              <FormControl>
-                <InputLabel htmlFor="dream-description">Dream description:</InputLabel>
-                <Input 
-                  id="dream-description" 
-                  value={dream.description}
-                  // TODO Multiline Input component does not work
-                  multiline={true}
-                  fullWidth 
-                  />
-              </FormControl>
-              <FormControl>
-                <InputLabel htmlFor="dream-tags">Tags: </InputLabel>
-                <Input 
-                  id="dream-tags" 
-                  value={dream.tags.join(", ")}
-                  // multiline
-                  fullWidth 
-                  />
-              </FormControl>
+                    <InputLabel htmlFor="dream-title">Dream title</InputLabel>
+                    <Input 
+                      id="dream-title" 
+                      // Making this an uncontrolled component, so that I don't have to call onChange handler on each input
+                      // value={dream.title}
+                      defaultValue={dream.title}
+                      variant='soft'
+                      placeholder='Dream title'
+                      multiline
+                      fullWidth 
+                      />
+                  </FormControl>
+                  <FormControl>
+                    <InputLabel htmlFor="date-created">Date created: </InputLabel>
+                    <Input 
+                      disabled
+                      id="date-created"
+                      value={dream.dateCreated}
+                      ></Input>
+                  </FormControl>
+                  <FormControl>
+                    <InputLabel htmlFor="last-edited">Last edited: </InputLabel>
+                    <Input 
+                      disabled 
+                      id="last-edited"
+                      value={dream.lastEdited}
+                      >
+                      {dream.lastEdited}
+                    </Input>
+                  </FormControl>
+                  <FormControl>
+                    <InputLabel htmlFor="dream-description">Dream description:</InputLabel>
+                    <Input 
+                      id="dream-description" 
+                      defaultValue={dream.description}
+                      onChange={(e) => {
+                        clearTimeout(timer);
+                        timer = setTimeout(() => {
+                          // Passing in e.target.value instead of `e`, as `e` is nullified after `handleFormInput` is invoked. `setTimeout` then runs with nullified event object, so that `e.target.value` does not contain user input.
+                          handleFormInput(dream.id, "description", e.target.value);
+                        }, 1000);
+                      }}
+                      // TODO Multiline Input component does not work
+                      multiline={true}
+                      fullWidth 
+                      />
+                  </FormControl>
+                  <FormControl>
+                    <InputLabel htmlFor="dream-tags">Tags: </InputLabel>
+                    <Input 
+                      id="dream-tags" 
+                      value={dream.tags.join(", ")}
+                      // multiline
+                      fullWidth 
+                    />
+                    <FormHelperText>Use this format: #tag1, #tag2, etc.</FormHelperText>
+                  </FormControl>
+
               </React.Fragment>
               // <React.Fragment key={dream.id}>
               //   {/* Should this be a form component so the user can edit the individual subcategories of the dream? */}
