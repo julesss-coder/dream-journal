@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import Typography from '@mui/joy/Typography';
 import Box from '@mui/joy/Box';
 import BottomNavigation from '@mui/material/BottomNavigation';
@@ -13,6 +13,10 @@ import Input from '@mui/joy/Input';
 import List from '@mui/joy/List';
 import ListItemButton from '@mui/joy/ListItemButton';
 import Search from '@mui/icons-material/Search';
+import FormControl from '@mui/joy/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+
+
 
 
 
@@ -67,12 +71,6 @@ function App() {
   };
 
   const handleAddDream = () => {
-    console.log("handleAddDream() runs");
-    /*
-    Create new dream entry
-    Add it to database
-    Set selectedDreamId to id of new dream
-    */
    let newDreamId = getLastDreamId() + 1;
 
    let newDream = {
@@ -85,10 +83,16 @@ function App() {
     "lastEdited": new Date(Date.now()).toUTCString(),
    };
 
-   console.log("new Dream: ", newDream);
-
    setDreams(prevDreams => [...prevDreams, newDream]);
    setSelectedDreamId(newDreamId);
+  };
+
+  const handleFormInput = (dreamId, prop, e) => {
+    console.log("handleFormInput() runs, dreamId: ", dreamId, prop, e);
+    /*
+      On every input, input is added to title
+
+    */
   };
 
   console.log("dreams: ", dreams);
@@ -213,6 +217,7 @@ function App() {
           width: '100%'
         }}
       >
+        
         {
           selectedDreamId === null && <Typography>No dream selected.</Typography>
         }
@@ -222,23 +227,75 @@ function App() {
               dream.id === selectedDreamId
             )).map(dream => (
               <React.Fragment key={dream.id}>
-                {/* Should this be a form component so the user can edit the individual subcategories of the dream? */}
-                <Typography 
-                  level="title-lg"
-                  color="primary" 
-                  variant="plain"
+
+              <FormControl
+                onChange={(e) => handleFormInput(dream.id, "title", e)}
+              >
+                <InputLabel htmlFor="dream-title">Dream title</InputLabel>
+                <Input 
+                  id="dream-title" 
+                  value={dream.title}
+                  variant='soft'
+                  placeholder='Dream title'
+                  multiline
+                  fullWidth 
+                  />
+              </FormControl>
+              <FormControl>
+                <InputLabel htmlFor="date-created">Date created: </InputLabel>
+                <Input 
+                  disabled
+                  id="date-created"
+                  value={dream.dateCreated}
+                  ></Input>
+              </FormControl>
+              <FormControl>
+                <InputLabel htmlFor="last-edited">Last edited: </InputLabel>
+                <Input 
+                  disabled 
+                  id="last-edited"
+                  value={dream.lastEdited}
                   >
-                  {dream.title}
-                </Typography>
-                <Typography level="body-sm">Create date: {dream.dateCreated} </Typography>
-                <Typography level="body-sm">Last edited: {dream.lastEdited}</Typography>
-                <Typography level="body-md">{dream.description}</Typography>
-                <Typography>Tags:  
-                  {dream.tags.map((tag, index) => (
-                    <span key={index}>#{tag}</span>
-                  ))}
-                </Typography>
+                  {dream.lastEdited}
+                </Input>
+              </FormControl>
+              <FormControl>
+                <InputLabel htmlFor="dream-description">Dream description:</InputLabel>
+                <Input 
+                  id="dream-description" 
+                  value={dream.description}
+                  // TODO Multiline Input component does not work
+                  multiline={true}
+                  fullWidth 
+                  />
+              </FormControl>
+              <FormControl>
+                <InputLabel htmlFor="dream-tags">Tags: </InputLabel>
+                <Input 
+                  id="dream-tags" 
+                  value={dream.tags.join(", ")}
+                  // multiline
+                  fullWidth 
+                  />
+              </FormControl>
               </React.Fragment>
+              // <React.Fragment key={dream.id}>
+              //   {/* Should this be a form component so the user can edit the individual subcategories of the dream? */}
+              //   <Typography 
+              //     level="title-lg"
+              //     color="primary" 
+              //     variant="plain"
+              //     >
+              //     {dream.title}
+              //   </Typography>
+
+              //   <Typography level="body-md">{dream.description}</Typography>
+              //   <Typography>Tags:  
+              //     {dream.tags.map((tag, index) => (
+              //       <span key={index}>#{tag}</span>
+              //     ))}
+              //   </Typography>
+              // </React.Fragment>
 
             ))
 
