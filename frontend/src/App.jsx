@@ -18,12 +18,15 @@ import Search from '@mui/icons-material/Search';
 
 
 function App() {
-  const [dreams, setDreams] = useState(null);
+  const [dreams, setDreams] = useState([]);
   const [open, setOpen] = React.useState(false);
   const [selectedDreamId, setSelectedDreamId] = useState(null);
 
+  
+
   useEffect(() => {
     const fetchDreams = async () => {
+      console.log("fetchDreams() runs");
       try {
         let response = await fetch('http://localhost:4000/dreams');
         if (!response.ok) {
@@ -31,6 +34,7 @@ function App() {
         }
         
         let data = await response.json();
+        console.log("data: ", data);
         setDreams(data);
       } catch (error) {
         console.error('A problem occurred when fetching the data: ', error);
@@ -38,7 +42,23 @@ function App() {
     };
 
     fetchDreams();
-  }, []);
+  // Should run 1) on first render, 2) when new dream added, 3) when dream deleted, 4) when dream edited
+  }, []); 
+
+  
+  const getLastDreamId = () => {
+    let lastDreamId = -1;
+    if (dreams.length > 0) {
+      dreams.forEach(dream => {
+        if (dream.id > lastDreamId) {
+          lastDreamId = dream.id;
+        }
+      });
+    } 
+
+    return lastDreamId;
+  };
+
 
   const handleDreamClick = (dreamId, e) => {
     console.log("handleDreamClick() runs, dreamId: ", dreamId, e);
@@ -46,7 +66,33 @@ function App() {
     setOpen(false);
   };
 
+  const handleAddDream = () => {
+    console.log("handleAddDream() runs");
+    /*
+    Create new dream entry
+    Add it to database
+    Set selectedDreamId to id of new dream
+    */
+   let newDreamId = getLastDreamId() + 1;
+
+   let newDream = {
+    "id": newDreamId,
+    "userId": 1, // TODO Change depending on user logged in
+    "title": "test",
+    "description": "",
+    "tags": [],
+    "dateCreated": new Date(Date.now()).toUTCString(),
+    "lastEdited": new Date(Date.now()).toUTCString(),
+   };
+
+   console.log("new Dream: ", newDream);
+
+   setDreams(prevDreams => [...prevDreams, newDream]);
+   setSelectedDreamId(newDreamId);
+  };
+
   console.log("dreams: ", dreams);
+  console.log("selectedDreamId: ", selectedDreamId);
 
   return (
     <Box 
@@ -144,7 +190,7 @@ function App() {
           }}
         >
           {
-            dreams && dreams.map(dream => (
+            dreams.map(dream => (
             <ListItemButton
               key={dream.id}
               onClick={(e) => handleDreamClick(dream.id, e)}
@@ -210,7 +256,11 @@ function App() {
           width: "100%"
         }}
       >
-        <BottomNavigationAction label="Add dream" icon={<AddCircleOutlineIcon/>} />
+        <BottomNavigationAction 
+          label="Add dream" 
+          icon={<AddCircleOutlineIcon/>} 
+          onClick={handleAddDream}
+        />
         <BottomNavigationAction label="Analyze" icon={<BubbleChartIcon />} />
       </BottomNavigation>
     </Box>
