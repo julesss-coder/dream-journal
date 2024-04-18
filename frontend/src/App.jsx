@@ -16,6 +16,9 @@ import Search from '@mui/icons-material/Search';
 import FormControl from '@mui/joy/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import FormHelperText from '@mui/joy/FormHelperText';
+import Chip from '@mui/joy/Chip';
+import ChipDelete from '@mui/joy/ChipDelete';
+
 
 
 
@@ -24,6 +27,7 @@ function App() {
   const [dreams, setDreams] = useState([]);
   const [open, setOpen] = React.useState(false);
   const [selectedDreamId, setSelectedDreamId] = useState(null);
+  const [tagInput, setTagInput] = useState('');
 
   let timer;
 
@@ -100,21 +104,40 @@ function App() {
   // }, 1000);
 
   const handleFormInput = (dreamId, prop, value) => {
-    console.log("handleFormInput() runs");
-    setDreams(prevDreams => {
-      return prevDreams.map(dream => {
-        if (dream.id === dreamId) {
-          return {
-            ...dream, 
-            [prop]: value,
-            lastEdited: new Date(Date.now()).toUTCString()
-          };
-        } else {
-          return dream;
-        }
+    console.log("handleFormInput() runs, prop, value: ", prop, value);
+    if (prop === "tags") {
+      setDreams(prevDreams => {
+        return prevDreams.map(dream => {
+          if (dream.id === dreamId) {
+            return {
+              ...dream, 
+              [prop]: value.split(", ").map(tag => tag.trim()).filter(tag => tag !== ""),
+              lastEdited: new Date(Date.now()).toUTCString()
+            };
+          } else {
+            return dream;
+          }
+        });
       });
-    });
+    } else {
+      setDreams(prevDreams => {
+        return prevDreams.map(dream => {
+          if (dream.id === dreamId) {
+            return {
+              ...dream, 
+              [prop]: value,
+              lastEdited: new Date(Date.now()).toUTCString()
+            };
+          } else {
+            return dream;
+          }
+        });
+      });
+    }
   };
+
+
+
 
   console.log("dreams: ", dreams);
   console.log("selectedDreamId: ", selectedDreamId);
@@ -277,6 +300,7 @@ function App() {
                       fullWidth 
                       />
                   </FormControl>
+                  {/* test */}
                   <FormControl>
                     <InputLabel htmlFor="date-created">Date created: </InputLabel>
                     <Input 
@@ -313,14 +337,61 @@ function App() {
                       />
                   </FormControl>
                   <FormControl>
-                    <InputLabel htmlFor="dream-tags">Tags: </InputLabel>
+                    <InputLabel htmlFor="dream-thoughts">Thoughts:</InputLabel>
                     <Input 
-                      id="dream-tags" 
-                      value={dream.tags.join(", ")}
-                      // multiline
+                      id="dream-thoughts" 
+                      defaultValue={dream.thoughts}
+                      onChange={(e) => {
+                        clearTimeout(timer);
+                        timer = setTimeout(() => {
+                          // Passing in e.target.value instead of `e`, as `e` is nullified after `handleFormInput` is invoked. `setTimeout` then runs with nullified event object, so that `e.target.value` does not contain user input.
+                          handleFormInput(dream.id, "thoughts", e.target.value);
+                        }, 1000);
+                      }}
+                      // TODO Multiline Input component does not work
+                      multiline={true}
                       fullWidth 
                     />
-                    <FormHelperText>Use this format: #tag1, #tag2, etc.</FormHelperText>
+                  </FormControl>
+                  <FormControl>
+                    <InputLabel htmlFor="dream-tags">Tags: </InputLabel>
+                    {/* Use library mui-chips-input to display and input tags/Chips in the same input field: https://github.com/viclafouch/mui-chips-input */}
+                    <Input 
+                      id="dream-tags" 
+                      defaultValue={dream.tags.join(", ")} 
+                      // value={tagInput}
+                      onChange={(e) => {
+                        handleFormInput(dream.id, "tags", e.target.value);
+                        // setTagInput(e.target.value.split(",")[0]);
+                      }}
+                      // onKeyUp={(e) => {
+                      //   if (e.key === ",") {
+                      //     setTagInput("");
+                      //   }
+                      // }}
+                        /*
+                        Should only tags that start with #
+                        Tags must be written in one word
+                        On hitting enter after entry:
+                        Display tag as a "chip"
+                        */
+                       // multiline
+                       fullWidth 
+                    />
+                    {/* On delete, tag should be deleted from chips, but also from input */}
+                    {/* {
+                      dream.tags.map(tag => (
+                        <Chip
+                          color="primary"
+                          onClick={function(){}}
+                          variant="solid"
+                          endDecorator={<ChipDelete onDelete={() => alert('Delete')} />}
+                        >
+                          {tag}
+                        </Chip>
+                      ))
+                    } */}
+                    <FormHelperText>Use this format: tag, tagConsistingOfSeveralWords.</FormHelperText>
                   </FormControl>
 
               </React.Fragment>
@@ -343,7 +414,6 @@ function App() {
               // </React.Fragment>
 
             ))
-
           )
         }
       </Box>    
