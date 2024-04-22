@@ -25,6 +25,7 @@ import DeleteForever from '@mui/icons-material/DeleteForever';
 import MenuItem from '@mui/joy/MenuItem';
 import MoreVert from '@mui/icons-material/MoreVert';
 import JoyUiMenu from '@mui/joy/Menu';
+import TextField from '@mui/material/TextField';
 
 
 
@@ -39,7 +40,7 @@ function App() {
 
   let timer;
 
-  
+
 
   useEffect(() => {
     const fetchDreams = async () => {
@@ -49,7 +50,7 @@ function App() {
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-        
+
         let data = await response.json();
         console.log("data: ", data);
         setDreams(data);
@@ -59,10 +60,10 @@ function App() {
     };
 
     fetchDreams();
-  // Should run 1) on first render, 2) when new dream added, 3) when dream deleted, 4) when dream edited
-  }, []); 
+    // Should run 1) on first render, 2) when new dream added, 3) when dream deleted, 4) when dream edited
+  }, []);
 
-  
+
   const getLastDreamId = () => {
     let lastDreamId = -1;
     if (dreams.length > 0) {
@@ -71,7 +72,7 @@ function App() {
           lastDreamId = dream.id;
         }
       });
-    } 
+    }
 
     return lastDreamId;
   };
@@ -84,20 +85,20 @@ function App() {
   };
 
   const handleAddDream = () => {
-   let newDreamId = getLastDreamId() + 1;
+    let newDreamId = getLastDreamId() + 1;
 
-   let newDream = {
-    "id": newDreamId,
-    "userId": 1, // TODO Change depending on user logged in
-    "title": "test",
-    "description": "",
-    "tags": [],
-    "dateCreated": new Date(Date.now()).toUTCString(),
-    "lastEdited": null,
-   };
+    let newDream = {
+      "id": newDreamId,
+      "userId": 1, // TODO Change depending on user logged in
+      "title": "test",
+      "description": "",
+      "tags": [],
+      "dateCreated": new Date(Date.now()).toUTCString(),
+      "lastEdited": null,
+    };
 
-   setDreams(prevDreams => [...prevDreams, newDream]);
-   setSelectedDreamId(newDreamId);
+    setDreams(prevDreams => [...prevDreams, newDream]);
+    setSelectedDreamId(newDreamId);
   };
 
   // const handleFormInput = setTimeout((dreamId, prop, e) => {
@@ -118,7 +119,7 @@ function App() {
         return prevDreams.map(dream => {
           if (dream.id === dreamId) {
             return {
-              ...dream, 
+              ...dream,
               [prop]: value.split(", ").map(tag => tag.trim()).filter(tag => tag !== ""),
               lastEdited: new Date(Date.now()).toUTCString()
             };
@@ -132,7 +133,7 @@ function App() {
         return prevDreams.map(dream => {
           if (dream.id === dreamId) {
             return {
-              ...dream, 
+              ...dream,
               [prop]: value,
               lastEdited: new Date(Date.now()).toUTCString()
             };
@@ -160,36 +161,36 @@ function App() {
   console.log("selectedDreamId: ", selectedDreamId);
 
   return (
-    <Box 
+    <Box
       component="main"
-      variant="outlined" 
+      variant="outlined"
       sx={{
         display: "flex",
         flexDirection: "column",
         height: "100vh",
         width: "100%",
         // bgcolor: "lightgray",
-      }}  
+      }}
     >
       {/* Sider menu icon */}
-      <IconButton 
-        variant="outlined" 
-        color="neutral" 
+      <IconButton
+        variant="outlined"
+        color="neutral"
         onClick={() => setOpen(true)}
         sx={{
           justifyContent: "flex-start"
-        }}  
+        }}
       >
         <Menu />
       </IconButton>
       {/* Sider */}
-      <Drawer 
-        open={open} 
+      <Drawer
+        open={open}
         onClose={() => setOpen(false)}
         color="primary"
         invertedColors
         size="sm"
-        variant="soft"  
+        variant="soft"
       >
         <Box
           sx={{
@@ -256,17 +257,17 @@ function App() {
         >
           {
             dreams.map(dream => (
-            <ListItemButton
-              key={dream.id}
-              onClick={(e) => handleDreamClick(dream.id, e)}
-            >
-              {dream.title}
-            </ListItemButton>
+              <ListItemButton
+                key={dream.id}
+                onClick={(e) => handleDreamClick(dream.id, e)}
+              >
+                {dream.title}
+              </ListItemButton>
             ))
           }
         </List>
       </Drawer>
-      
+
       {/* Dream editor */}
       <Box
         sx={{
@@ -286,32 +287,31 @@ function App() {
                 display: "flex",
                 justifyContent: "flex-end",
                 // width: "10px"
-                mx: 2,
+                mb: 1,
               }}
-            >  
+            >
               <Dropdown
               >
-                <MenuButton size="sm" sx={{p: "6px"}}>
+                <MenuButton size="sm" sx={{ p: "6px" }}>
                   <MoreVert />
                 </MenuButton>
                 <JoyUiMenu placement='bottom-end'>
-                <MenuItem 
-                  variant="soft" 
-                  color="danger"
-                  onClick={handleDeleteDream}
-                >
-                  <ListItemDecorator sx={{ color: 'inherit' }}>
-                    <DeleteForever />
-                  </ListItemDecorator>
-                  Delete dream
-                </MenuItem>
+                  <MenuItem
+                    variant="soft"
+                    color="danger"
+                    onClick={handleDeleteDream}
+                  >
+                    <ListItemDecorator sx={{ color: 'inherit' }}>
+                      <DeleteForever />
+                    </ListItemDecorator>
+                    Delete dream
+                  </MenuItem>
                 </JoyUiMenu>
               </Dropdown>
-
             </Box>
           )
         }
-        
+
         {
           selectedDreamId === null && <Typography>No dream selected.</Typography>
         }
@@ -324,170 +324,110 @@ function App() {
         
         */}
 
-          {
+        {
           selectedDreamId && (
             dreams.filter(dream => (
               dream.id === selectedDreamId
             )).map(dream => (
-              <React.Fragment key={dream.id}>
-                
-                  <FormControl
-                    onChange={(e) => {
-                      clearTimeout(timer);
-                      timer = setTimeout(() => {
-                        // Passing in e.target.value instead of `e`, as `e` is nullified after `handleFormInput` is invoked. `setTimeout` then runs with nullified event object, so that `e.target.value` does not contain user input.
-                        handleFormInput(dream.id, "title", e.target.value);
-                      }, 1000);
-                    }}
-                  >
-                    <InputLabel htmlFor="dream-title">Dream title</InputLabel>
-                    <Input 
-                      id="dream-title" 
-                      // Making this an uncontrolled component, so that I don't have to call onChange handler on each input
-                      // value={dream.title}
-                      defaultValue={dream.title}
-                      variant='soft'
-                      placeholder='Dream title'
-                      multiline
-                      fullWidth 
-                      />
-                  </FormControl>
-                  <FormControl>
-                    <InputLabel htmlFor="date-created">Date created: </InputLabel>
-                    <Input 
-                      disabled
-                      id="date-created"
-                      value={dream.dateCreated}
-                      ></Input>
-                  </FormControl>
-                  <FormControl>
-                    <InputLabel htmlFor="last-edited">Last edited: </InputLabel>
-                    <Input 
-                      disabled 
-                      id="last-edited"
-                      value={dream.lastEdited}
-                      >
-                      {dream.lastEdited}
-                    </Input>
-                  </FormControl>
-                  <FormControl>
-                    <InputLabel htmlFor="dream-description">Dream description:</InputLabel>
-                    <Input 
-                      id="dream-description" 
-                      defaultValue={dream.description}
-                      onChange={(e) => {
-                        clearTimeout(timer);
-                        timer = setTimeout(() => {
-                          // Passing in e.target.value instead of `e`, as `e` is nullified after `handleFormInput` is invoked. `setTimeout` then runs with nullified event object, so that `e.target.value` does not contain user input.
-                          handleFormInput(dream.id, "description", e.target.value);
-                        }, 1000);
-                      }}
-                      // TODO Multiline Input component does not work
-                      multiline={true}
-                      fullWidth 
-                      />
-                  </FormControl>
-                  <FormControl>
-                    <InputLabel htmlFor="dream-thoughts">Thoughts:</InputLabel>
-                    <Input 
-                      id="dream-thoughts" 
-                      defaultValue={dream.thoughts}
-                      onChange={(e) => {
-                        clearTimeout(timer);
-                        timer = setTimeout(() => {
-                          // Passing in e.target.value instead of `e`, as `e` is nullified after `handleFormInput` is invoked. `setTimeout` then runs with nullified event object, so that `e.target.value` does not contain user input.
-                          handleFormInput(dream.id, "thoughts", e.target.value);
-                        }, 1000);
-                      }}
-                      // TODO Multiline Input component does not work
-                      multiline={true}
-                      fullWidth 
-                    />
-                  </FormControl>
-                  <FormControl>
-                    <InputLabel htmlFor="dream-tags">Tags: </InputLabel>
-                    {/* Use library mui-chips-input to display and input tags/Chips in the same input field: https://github.com/viclafouch/mui-chips-input */}
-                    <Input 
-                      id="dream-tags" 
-                      defaultValue={dream.tags.join(", ")} 
-                      // value={tagInput}
-                      onChange={(e) => {
-                        handleFormInput(dream.id, "tags", e.target.value);
-                        // setTagInput(e.target.value.split(",")[0]);
-                      }}
-                      // onKeyUp={(e) => {
-                      //   if (e.key === ",") {
-                      //     setTagInput("");
-                      //   }
-                      // }}
-                        /*
-                        Should only tags that start with #
-                        Tags must be written in one word
-                        On hitting enter after entry:
-                        Display tag as a "chip"
-                        */
-                       // multiline
-                       fullWidth 
-                    />
-                    {/* On delete, tag should be deleted from chips, but also from input */}
-                    {/* {
-                      dream.tags.map(tag => (
-                        <Chip
-                          color="primary"
-                          onClick={function(){}}
-                          variant="solid"
-                          endDecorator={<ChipDelete onDelete={() => alert('Delete')} />}
-                        >
-                          {tag}
-                        </Chip>
-                      ))
-                    } */}
-                    <FormHelperText>Use this format: tag, tagConsistingOfSeveralWords.</FormHelperText>
-                  </FormControl>
-
-              </React.Fragment>
-              // <React.Fragment key={dream.id}>
-              //   {/* Should this be a form component so the user can edit the individual subcategories of the dream? */}
-              //   <Typography 
-              //     level="title-lg"
-              //     color="primary" 
-              //     variant="plain"
-              //     >
-              //     {dream.title}
-              //   </Typography>
-
-              //   <Typography level="body-md">{dream.description}</Typography>
-              //   <Typography>Tags:  
-              //     {dream.tags.map((tag, index) => (
-              //       <span key={index}>#{tag}</span>
-              //     ))}
-              //   </Typography>
-              // </React.Fragment>
-
+              <Box
+                key={dream.id}
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "15px"
+                }}
+              >
+                <TextField
+                  id="dream-title"
+                  label="Dream title"
+                  defaultValue={dream.title}
+                  placeholder='Dream title'
+                  multiline
+                  fullWidth
+                  onChange={(e) => {
+                    clearTimeout(timer);
+                    timer = setTimeout(() => {
+                      // Passing in e.target.value instead of `e`, as `e` is nullified after `handleFormInput` is invoked. `setTimeout` then runs with nullified event object, so that `e.target.value` does not contain user input.
+                      handleFormInput(dream.id, "title", e.target.value);
+                    }, 1000);
+                  }}
+                />
+                <TextField
+                  id="date-created"
+                  label="Created on:"
+                  disabled
+                  value={dream.dateCreated}
+                />
+                <TextField
+                  id="last-edited"
+                  label="Last edited on:"
+                  disabled
+                  value={dream.lastEdited}
+                />
+                <TextField
+                  id="dream-description"
+                  label="Dream description"
+                  defaultValue={dream.description}
+                  onChange={(e) => {
+                    clearTimeout(timer);
+                    timer = setTimeout(() => {
+                      // Passing in e.target.value instead of `e`, as `e` is nullified after `handleFormInput` is invoked. `setTimeout` then runs with nullified event object, so that `e.target.value` does not contain user input.
+                      handleFormInput(dream.id, "description", e.target.value);
+                    }, 1000);
+                  }}
+                  multiline
+                  fullWidth
+                />
+                <TextField
+                  id="dream-thoughts"
+                  label="Thoughts about my dream, interpretation etc."
+                  defaultValue={dream.thoughts}
+                  onChange={(e) => {
+                    clearTimeout(timer);
+                    timer = setTimeout(() => {
+                      // Passing in e.target.value instead of `e`, as `e` is nullified after `handleFormInput` is invoked. `setTimeout` then runs with nullified event object, so that `e.target.value` does not contain user input.
+                      handleFormInput(dream.id, "thoughts", e.target.value);
+                    }, 1000);
+                  }}
+                  multiline
+                  fullWidth
+                />
+                <TextField
+                  id="dream-tags"
+                  label="Dream tags"
+                  defaultValue={dream.tags.join(", ")}
+                  helperText="Use this format: tag, tagConsistingOfSeveralWords"
+                  onChange={(e) => {
+                    handleFormInput(dream.id, "tags", e.target.value);
+                  }}
+                  fullWidth
+                  multiline
+                />
+              </Box>
             ))
           )
         }
-      </Box>    
+      </Box>
 
       {/* Bottom Nav */}
       <BottomNavigation
         showLabels
         sx={{
           position: "fixed",
-          top: "auto", 
+          top: "auto",
           bottom: 0,
           width: "100%"
         }}
       >
-        <BottomNavigationAction 
-          label="Add dream" 
-          icon={<AddCircleOutlineIcon/>} 
+        <BottomNavigationAction
+          label="Add dream"
+          icon={<AddCircleOutlineIcon />}
           onClick={handleAddDream}
         />
         <BottomNavigationAction label="Analyze" icon={<BubbleChartIcon />} />
       </BottomNavigation>
     </Box>
-    
+
   );
 }
 
