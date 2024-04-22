@@ -18,6 +18,14 @@ import InputLabel from '@mui/material/InputLabel';
 import FormHelperText from '@mui/joy/FormHelperText';
 import Chip from '@mui/joy/Chip';
 import ChipDelete from '@mui/joy/ChipDelete';
+import Dropdown from '@mui/joy/Dropdown';
+import MenuButton from '@mui/joy/MenuButton';
+import ListItemDecorator from '@mui/joy/ListItemDecorator';
+import DeleteForever from '@mui/icons-material/DeleteForever';
+import MenuItem from '@mui/joy/MenuItem';
+import MoreVert from '@mui/icons-material/MoreVert';
+import JoyUiMenu from '@mui/joy/Menu';
+
 
 
 
@@ -135,6 +143,15 @@ function App() {
       });
     }
   };
+
+  const handleDeleteDream = () => {
+    setDreams(prevDreams => {
+      return prevDreams.filter(dream => {
+        return selectedDreamId !== dream.id;
+      });
+    });
+    setSelectedDreamId(null);
+  }
 
 
 
@@ -257,10 +274,43 @@ function App() {
           flexDirection: 'column',
           gap: 0.5,
           m: 2,
-          height: '100%', 
-          width: '100%'
+          // height: "98vh", 
+          // width: "98vw"
+          height: "100%"
         }}
       >
+        {
+          selectedDreamId !== null && (
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "flex-end",
+                // width: "10px"
+                mx: 2,
+              }}
+            >  
+              <Dropdown
+              >
+                <MenuButton size="sm" sx={{p: "6px"}}>
+                  <MoreVert />
+                </MenuButton>
+                <JoyUiMenu placement='bottom-end'>
+                <MenuItem 
+                  variant="soft" 
+                  color="danger"
+                  onClick={handleDeleteDream}
+                >
+                  <ListItemDecorator sx={{ color: 'inherit' }}>
+                    <DeleteForever />
+                  </ListItemDecorator>
+                  Delete dream
+                </MenuItem>
+                </JoyUiMenu>
+              </Dropdown>
+
+            </Box>
+          )
+        }
         
         {
           selectedDreamId === null && <Typography>No dream selected.</Typography>
@@ -273,12 +323,14 @@ function App() {
             Überarbeiteten Traum in Datenbank speichern (in der Cleanup function)
         
         */}
-        {
+
+          {
           selectedDreamId && (
             dreams.filter(dream => (
               dream.id === selectedDreamId
             )).map(dream => (
               <React.Fragment key={dream.id}>
+                
                   <FormControl
                     onChange={(e) => {
                       clearTimeout(timer);
@@ -300,7 +352,6 @@ function App() {
                       fullWidth 
                       />
                   </FormControl>
-                  {/* test */}
                   <FormControl>
                     <InputLabel htmlFor="date-created">Date created: </InputLabel>
                     <Input 
