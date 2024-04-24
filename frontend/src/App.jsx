@@ -14,6 +14,7 @@ import List from '@mui/joy/List';
 import ListItemButton from '@mui/joy/ListItemButton';
 import Search from '@mui/icons-material/Search';
 import DreamEditor from './components/DreamEditor.jsx';
+import Sider from './components/Sider.jsx';
 
 function App() {
   const [dreams, setDreams] = useState([]);
@@ -163,7 +164,13 @@ function App() {
         <Menu />
       </IconButton>
       {/* Sider */}
-      <Drawer
+      <Sider 
+      open={open}
+        setOpen={setOpen}
+        dreams={dreams}
+        handleDreamClick={handleDreamClick}
+      />
+      {/* <Drawer
         open={open}
         onClose={() => setOpen(false)}
         color="primary"
@@ -245,7 +252,7 @@ function App() {
             ))
           }
         </List>
-      </Drawer>
+      </Drawer> */}
 
       {/* Dream editor */}
       <DreamEditor 

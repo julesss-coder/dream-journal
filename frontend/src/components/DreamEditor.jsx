@@ -87,6 +87,8 @@ function DreamEditor({
                 flexDirection: "column",
                 gap: "15px"
               }}
+              // IDEA for later: The `onChange` event does bubble, so instead of debouncing `onFormInput` by just 100ms in the onChange handler, I could register changes in the form in this onChange handler for all form fields, and debounce it by 1000ms, and call it also when user leaves page (within useEffect cleanup function). 
+              onChange={(e) => console.log("onChange handler in form Box runs", e.bubbles, e.target.id, e.target.value)}
             >
               <TextField
                 id="dream-title"
