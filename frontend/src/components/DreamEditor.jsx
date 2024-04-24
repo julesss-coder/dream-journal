@@ -9,35 +9,37 @@ import MoreVert from '@mui/icons-material/MoreVert';
 import JoyUiMenu from '@mui/joy/Menu';
 import TextField from '@mui/material/TextField';
 
-
-
 function DreamEditor({
   selectedDreamId,
-  handleDeleteDream, 
-  dreams, 
+  handleDeleteDream,
+  dreams,
   handleFormInput
 }) {
   let timer;
 
   return (
+    // Outer container
     <Box
       sx={{
         display: 'flex',
         flexDirection: 'column',
         gap: 0.5,
         m: 2,
-        // height: "98vh", 
-        // width: "98vw"
         height: "100%"
       }}
     >
+      {/* Dream container */}
+      {
+        selectedDreamId === null && <Typography>No dream selected.</Typography>
+      }
+
+      {/* "Delete dream" menu */}
       {
         selectedDreamId !== null && (
           <Box
             sx={{
               display: "flex",
               justifyContent: "flex-end",
-              // width: "10px"
               mb: 1,
             }}
           >
@@ -63,18 +65,7 @@ function DreamEditor({
         )
       }
 
-      {
-        selectedDreamId === null && <Typography>No dream selected.</Typography>
-      }
-      {/* 
-      
-        On change (with debounce): 
-          Inhalt speichern im State
-        Vor Rerender: 
-          Überarbeiteten Traum in Datenbank speichern (in der Cleanup function)
-      
-      */}
-
+      {/* Dream editor */}
       {
         selectedDreamId && (
           dreams.filter(dream => (
@@ -87,7 +78,7 @@ function DreamEditor({
                 flexDirection: "column",
                 gap: "15px"
               }}
-              // IDEA for later: The `onChange` event does bubble, so instead of debouncing `onFormInput` by just 100ms in the onChange handler, I could register changes in the form in this onChange handler for all form fields, and debounce it by 1000ms, and call it also when user leaves page (within useEffect cleanup function). 
+              // IDEA for later: The `onChange` event DOES bubble, so instead of debouncing `onFormInput` by just 100ms in the onChange handler, I could register changes in the form in this onChange handler for all form fields, and debounce it by 1000ms, and call it also when user leaves page (within useEffect cleanup function). 
               onChange={(e) => console.log("onChange handler in form Box runs", e.bubbles, e.target.id, e.target.value)}
             >
               <TextField
@@ -102,7 +93,7 @@ function DreamEditor({
                   timer = setTimeout(() => {
                     // Passing in e.target.value instead of `e`, as `e` is nullified after `handleFormInput` is invoked. `setTimeout` then runs with nullified event object, so that `e.target.value` does not contain user input.
                     handleFormInput(dream.id, "title", e.target.value);
-                  }, 1000);
+                  }, 100);
                 }}
               />
               <TextField
@@ -126,7 +117,7 @@ function DreamEditor({
                   timer = setTimeout(() => {
                     // Passing in e.target.value instead of `e`, as `e` is nullified after `handleFormInput` is invoked. `setTimeout` then runs with nullified event object, so that `e.target.value` does not contain user input.
                     handleFormInput(dream.id, "description", e.target.value);
-                  }, 1000);
+                  }, 100);
                 }}
                 multiline
                 fullWidth
@@ -140,7 +131,7 @@ function DreamEditor({
                   timer = setTimeout(() => {
                     // Passing in e.target.value instead of `e`, as `e` is nullified after `handleFormInput` is invoked. `setTimeout` then runs with nullified event object, so that `e.target.value` does not contain user input.
                     handleFormInput(dream.id, "thoughts", e.target.value);
-                  }, 1000);
+                  }, 100);
                 }}
                 multiline
                 fullWidth
@@ -154,7 +145,7 @@ function DreamEditor({
                   clearTimeout(timer);
                   timer = setTimeout(() => {
                     handleFormInput(dream.id, "tags", e.target.value);
-                  }, 1000);
+                  }, 100);
                 }}
                 fullWidth
                 multiline
@@ -165,7 +156,6 @@ function DreamEditor({
       }
     </Box>
   )
-
 }
 
 export default DreamEditor;

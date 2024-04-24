@@ -7,9 +7,13 @@ import ListItemButton from '@mui/joy/ListItemButton';
 import Search from '@mui/icons-material/Search';
 import Box from '@mui/joy/Box';
 
-function Sider({open, setOpen, dreams, handleDreamClick}) {
+function Sider({ 
+  open,
+  setOpen,
+  dreams,
+  handleDreamClick 
+}) {
   return (
-
     <Drawer
       open={open}
       onClose={() => setOpen(false)}

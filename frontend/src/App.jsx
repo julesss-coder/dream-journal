@@ -1,18 +1,13 @@
-import React, { Fragment, useEffect, useState } from 'react';
-import Typography from '@mui/joy/Typography';
+import React, { useEffect, useState } from 'react';
+// Library component imports
 import Box from '@mui/joy/Box';
 import BottomNavigation from '@mui/material/BottomNavigation';
 import BottomNavigationAction from '@mui/material/BottomNavigationAction';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import BubbleChartIcon from '@mui/icons-material/BubbleChart';
 import IconButton from '@mui/joy/IconButton';
-import Drawer from '@mui/joy/Drawer';
-import ModalClose from '@mui/joy/ModalClose';
 import Menu from '@mui/icons-material/Menu';
-import Input from '@mui/joy/Input';
-import List from '@mui/joy/List';
-import ListItemButton from '@mui/joy/ListItemButton';
-import Search from '@mui/icons-material/Search';
+// Custom component imports
 import DreamEditor from './components/DreamEditor.jsx';
 import Sider from './components/Sider.jsx';
 
@@ -20,11 +15,9 @@ function App() {
   const [dreams, setDreams] = useState([]);
   const [open, setOpen] = React.useState(false);
   const [selectedDreamId, setSelectedDreamId] = useState(null);
-  const [tagInput, setTagInput] = useState('');
 
   useEffect(() => {
     const fetchDreams = async () => {
-      console.log("fetchDreams() runs");
       try {
         let response = await fetch('http://localhost:4000/dreams');
         if (!response.ok) {
@@ -32,17 +25,16 @@ function App() {
         }
 
         let data = await response.json();
-        console.log("data: ", data);
         setDreams(data);
       } catch (error) {
         console.error('A problem occurred when fetching the data: ', error);
       }
     };
 
+    // Once this is a fullstack project, this should run 1) on first render only. On every change to a dream, I will update both the local state and the database, so they should have the same data. 
+    // It should also run 2) when an error is thrown, to make sure that the local state and the database have the same data, 3) on a page refresh, 3) periodically, in case this app ever support real-time updates (for example, if multiple users can update the same dream at the same time).
     fetchDreams();
-    // Should run 1) on first render, 2) when new dream added, 3) when dream deleted, 4) when dream edited
   }, []);
-
 
   const getLastDreamId = () => {
     let lastDreamId = -1;
@@ -57,9 +49,7 @@ function App() {
     return lastDreamId;
   };
 
-
   const handleDreamClick = (dreamId, e) => {
-    console.log("handleDreamClick() runs, dreamId: ", dreamId, e);
     setSelectedDreamId(dreamId);
     setOpen(false);
   };
@@ -81,19 +71,7 @@ function App() {
     setSelectedDreamId(newDreamId);
   };
 
-  // const handleFormInput = setTimeout((dreamId, prop, e) => {
-  //   console.log("handleFormInput() runs, dreamId: ", dreamId, prop, e);
-  //   /*
-  //     On every input, input is added to title
-
-  //   */
-  // }, 1000);
-  // const handleFormInput = (dreamId, prop, e) => setTimeout(() => {
-  //   console.log("handleFormInput() runs, dreamId: ", dreamId, prop, e);
-  // }, 1000);
-
   const handleFormInput = (dreamId, prop, value) => {
-    console.log("handleFormInput() runs, prop, value: ", prop, value);
     if (prop === "tags") {
       setDreams(prevDreams => {
         return prevDreams.map(dream => {
@@ -132,10 +110,7 @@ function App() {
       });
     });
     setSelectedDreamId(null);
-  }
-
-
-
+  };
 
   console.log("dreams: ", dreams);
   console.log("selectedDreamId: ", selectedDreamId);
@@ -149,7 +124,6 @@ function App() {
         flexDirection: "column",
         height: "100vh",
         width: "100%",
-        // bgcolor: "lightgray",
       }}
     >
       {/* Sider menu icon */}
@@ -170,90 +144,6 @@ function App() {
         dreams={dreams}
         handleDreamClick={handleDreamClick}
       />
-      {/* <Drawer
-        open={open}
-        onClose={() => setOpen(false)}
-        color="primary"
-        invertedColors
-        size="sm"
-        variant="soft"
-      >
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 0.5,
-            ml: 'auto',
-            mt: 1,
-            mr: 2,
-          }}
-        >
-          <Typography
-            component="label"
-            htmlFor="close-icon"
-            fontSize="sm"
-            fontWeight="lg"
-            sx={{ cursor: 'pointer' }}
-          >
-            Close
-          </Typography>
-          <ModalClose id="close-icon" sx={{ position: 'initial' }} />
-        </Box>
-        <Input
-          size="sm"
-          placeholder="Search"
-          variant="plain"
-          endDecorator={<Search />}
-          slotProps={{
-            input: {
-              'aria-label': 'Search anything',
-            },
-          }}
-          sx={{
-            m: 3,
-            borderRadius: 0,
-            borderBottom: '2px solid',
-            borderColor: 'neutral.outlinedBorder',
-            '&:hover': {
-              borderColor: 'neutral.outlinedHoverBorder',
-            },
-            '&::before': {
-              border: '1px solid var(--Input-focusedHighlight)',
-              transform: 'scaleX(0)',
-              left: 0,
-              right: 0,
-              bottom: '-2px',
-              top: 'unset',
-              transition: 'transform .15s cubic-bezier(0.1,0.9,0.2,1)',
-              borderRadius: 0,
-            },
-            '&:focus-within::before': {
-              transform: 'scaleX(1)',
-            },
-          }}
-        />
-        <List
-          size="lg"
-          component="nav"
-          sx={{
-            flex: 'none',
-            fontSize: 'xl',
-            '& > div': { justifyContent: 'flex-start' },
-          }}
-        >
-          {
-            dreams.map(dream => (
-              <ListItemButton
-                key={dream.id}
-                onClick={(e) => handleDreamClick(dream.id, e)}
-              >
-                {dream.title}
-              </ListItemButton>
-            ))
-          }
-        </List>
-      </Drawer> */}
-
       {/* Dream editor */}
       <DreamEditor 
         selectedDreamId={selectedDreamId}
@@ -280,7 +170,6 @@ function App() {
         <BottomNavigationAction label="Analyze" icon={<BubbleChartIcon />} />
       </BottomNavigation>
     </Box>
-
   );
 }
 
