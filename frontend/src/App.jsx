@@ -13,34 +13,13 @@ import Input from '@mui/joy/Input';
 import List from '@mui/joy/List';
 import ListItemButton from '@mui/joy/ListItemButton';
 import Search from '@mui/icons-material/Search';
-import FormControl from '@mui/joy/FormControl';
-import InputLabel from '@mui/material/InputLabel';
-import FormHelperText from '@mui/joy/FormHelperText';
-import Chip from '@mui/joy/Chip';
-import ChipDelete from '@mui/joy/ChipDelete';
-import Dropdown from '@mui/joy/Dropdown';
-import MenuButton from '@mui/joy/MenuButton';
-import ListItemDecorator from '@mui/joy/ListItemDecorator';
-import DeleteForever from '@mui/icons-material/DeleteForever';
-import MenuItem from '@mui/joy/MenuItem';
-import MoreVert from '@mui/icons-material/MoreVert';
-import JoyUiMenu from '@mui/joy/Menu';
-import TextField from '@mui/material/TextField';
-
-
-
-
-
+import DreamEditor from './components/DreamEditor.jsx';
 
 function App() {
   const [dreams, setDreams] = useState([]);
   const [open, setOpen] = React.useState(false);
   const [selectedDreamId, setSelectedDreamId] = useState(null);
   const [tagInput, setTagInput] = useState('');
-
-  let timer;
-
-
 
   useEffect(() => {
     const fetchDreams = async () => {
@@ -269,145 +248,12 @@ function App() {
       </Drawer>
 
       {/* Dream editor */}
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 0.5,
-          m: 2,
-          // height: "98vh", 
-          // width: "98vw"
-          height: "100%"
-        }}
-      >
-        {
-          selectedDreamId !== null && (
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "flex-end",
-                // width: "10px"
-                mb: 1,
-              }}
-            >
-              <Dropdown
-              >
-                <MenuButton size="sm" sx={{ p: "6px" }}>
-                  <MoreVert />
-                </MenuButton>
-                <JoyUiMenu placement='bottom-end'>
-                  <MenuItem
-                    variant="soft"
-                    color="danger"
-                    onClick={handleDeleteDream}
-                  >
-                    <ListItemDecorator sx={{ color: 'inherit' }}>
-                      <DeleteForever />
-                    </ListItemDecorator>
-                    Delete dream
-                  </MenuItem>
-                </JoyUiMenu>
-              </Dropdown>
-            </Box>
-          )
-        }
-
-        {
-          selectedDreamId === null && <Typography>No dream selected.</Typography>
-        }
-        {/* 
-        
-          On change (with debounce): 
-            Inhalt speichern im State
-          Vor Rerender: 
-            Überarbeiteten Traum in Datenbank speichern (in der Cleanup function)
-        
-        */}
-
-        {
-          selectedDreamId && (
-            dreams.filter(dream => (
-              dream.id === selectedDreamId
-            )).map(dream => (
-              <Box
-                key={dream.id}
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "15px"
-                }}
-              >
-                <TextField
-                  id="dream-title"
-                  label="Dream title"
-                  defaultValue={dream.title}
-                  placeholder='Dream title'
-                  multiline
-                  fullWidth
-                  onChange={(e) => {
-                    clearTimeout(timer);
-                    timer = setTimeout(() => {
-                      // Passing in e.target.value instead of `e`, as `e` is nullified after `handleFormInput` is invoked. `setTimeout` then runs with nullified event object, so that `e.target.value` does not contain user input.
-                      handleFormInput(dream.id, "title", e.target.value);
-                    }, 1000);
-                  }}
-                />
-                <TextField
-                  id="date-created"
-                  label="Created on:"
-                  disabled
-                  value={dream.dateCreated}
-                />
-                <TextField
-                  id="last-edited"
-                  label="Last edited on:"
-                  disabled
-                  value={dream.lastEdited}
-                />
-                <TextField
-                  id="dream-description"
-                  label="Dream description"
-                  defaultValue={dream.description}
-                  onChange={(e) => {
-                    clearTimeout(timer);
-                    timer = setTimeout(() => {
-                      // Passing in e.target.value instead of `e`, as `e` is nullified after `handleFormInput` is invoked. `setTimeout` then runs with nullified event object, so that `e.target.value` does not contain user input.
-                      handleFormInput(dream.id, "description", e.target.value);
-                    }, 1000);
-                  }}
-                  multiline
-                  fullWidth
-                />
-                <TextField
-                  id="dream-thoughts"
-                  label="Thoughts about my dream, interpretation etc."
-                  defaultValue={dream.thoughts}
-                  onChange={(e) => {
-                    clearTimeout(timer);
-                    timer = setTimeout(() => {
-                      // Passing in e.target.value instead of `e`, as `e` is nullified after `handleFormInput` is invoked. `setTimeout` then runs with nullified event object, so that `e.target.value` does not contain user input.
-                      handleFormInput(dream.id, "thoughts", e.target.value);
-                    }, 1000);
-                  }}
-                  multiline
-                  fullWidth
-                />
-                <TextField
-                  id="dream-tags"
-                  label="Dream tags"
-                  defaultValue={dream.tags.join(", ")}
-                  helperText="Use this format: tag, tagConsistingOfSeveralWords"
-                  onChange={(e) => {
-                    handleFormInput(dream.id, "tags", e.target.value);
-                  }}
-                  fullWidth
-                  multiline
-                />
-              </Box>
-            ))
-          )
-        }
-      </Box>
+      <DreamEditor 
+        selectedDreamId={selectedDreamId}
+        handleDeleteDream={handleDeleteDream}
+        dreams={dreams}
+        handleFormInput={handleFormInput}
+      />
 
       {/* Bottom Nav */}
       <BottomNavigation
