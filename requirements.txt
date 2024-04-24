@@ -1,3 +1,15 @@
+VERSION 1.2:
+- [ ] Render one line per title, even for multiline titles 
+- [ ] Search bar should display all dreams with the search word in the dream entry (title, description, thoughts, tags)
+- [ ] Tags should be words without # character
+- [ ] Bottom menu should be visually separated from main area.
+
+OTHER TODOS: 
+- [x] Extract Sider component.
+- [x] Cleanup
+- [ ] Test
+
+
 VERSION 1
 
 It should give the user the option of
@@ -6,8 +18,10 @@ It should give the user the option of
   - big "+" symbol
   - autocreate date and time of writing dream note
   - give prompts (questions), but also general notes field
-- updating a dream
-- deleting a dream
+- [x] updating a dream
+- [x] deleting a dream
+
+
 
 DESIGN
 Material Ui -> MUI core -> Joy UI
