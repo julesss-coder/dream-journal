@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import Typography from '@mui/joy/Typography';
 import Drawer from '@mui/joy/Drawer';
 import ModalClose from '@mui/joy/ModalClose';
@@ -5,6 +6,7 @@ import Input from '@mui/joy/Input';
 import List from '@mui/joy/List';
 import ListItemButton from '@mui/joy/ListItemButton';
 import Search from '@mui/icons-material/Search';
+import ClearIcon from '@mui/icons-material/Clear';
 import Box from '@mui/joy/Box';
 
 function Sider({ 
@@ -13,6 +15,8 @@ function Sider({
   dreams,
   handleDreamClick 
 }) {
+  const [searchTerm, setSearchTerm] = useState("");
+
   return (
     <Drawer
       open={open}
@@ -47,7 +51,15 @@ function Sider({
         size="sm"
         placeholder="Search"
         variant="plain"
-        endDecorator={<Search />}
+        value={searchTerm}
+        startDecorator={<Search fontSize="small" />}
+        endDecorator={
+            <ClearIcon 
+              fontSize="small" 
+              onClick={() => setSearchTerm("")}
+            />   
+        }
+        onChange={(e) => setSearchTerm(e.target.value.trim().toLowerCase())}
         slotProps={{
           input: {
             'aria-label': 'Search anything',
@@ -86,18 +98,45 @@ function Sider({
         }}
       >
         {
-          dreams.map(dream => (
-            <ListItemButton
-              key={dream.id}
-              onClick={(e) => handleDreamClick(dream.id, e)}
-            >
-              {
-                dream.title.length > 19 
-                  ? dream.title.slice(0, 19) + '...'
-                  : dream.title  
-              }
-            </ListItemButton>
-          ))
+          searchTerm.length > 0 && (
+            dreams.filter(dream => {
+              return (
+                dream.title.toLowerCase().includes(searchTerm) ||
+                dream.description.toLowerCase().includes(searchTerm) ||
+                dream.thoughts.toLowerCase().includes(searchTerm) ||
+                dream.tags.some(tag => tag.toLowerCase().includes(searchTerm))
+              );
+            }).map(dream => (
+              <ListItemButton
+                key={dream.id}
+                onClick={(e) => handleDreamClick(dream.id, e)}
+              >
+                {
+                  dream.title.length > 19 
+                    ? dream.title.slice(0, 19) + '...'
+                    : dream.title  
+                }
+              </ListItemButton>
+            ))
+          )
+        }
+
+
+        {
+          searchTerm.length === 0 && (
+            dreams.map(dream => (
+              <ListItemButton
+                key={dream.id}
+                onClick={(e) => handleDreamClick(dream.id, e)}
+              >
+                {
+                  dream.title.length > 19 
+                    ? dream.title.slice(0, 19) + '...'
+                    : dream.title  
+                }
+              </ListItemButton>
+            ))
+          )
         }
       </List>
     </Drawer>
