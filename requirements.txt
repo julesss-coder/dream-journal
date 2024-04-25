@@ -1,5 +1,5 @@
 VERSION 1.2:
-- [ ] Render one line per title, even for multiline titles 
+- [x] Render one line per title, even for multiline titles 
 - [ ] Search bar should display all dreams with the search word in the dream entry (title, description, thoughts, tags)
 - [ ] Tags should be words without # character
 - [ ] Bottom menu should be visually separated from main area.

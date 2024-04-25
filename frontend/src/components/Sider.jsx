@@ -81,7 +81,7 @@ function Sider({
         component="nav"
         sx={{
           flex: 'none',
-          fontSize: 'xl',
+          fontSize: 'lg',
           '& > div': { justifyContent: 'flex-start' },
         }}
       >
@@ -91,7 +91,11 @@ function Sider({
               key={dream.id}
               onClick={(e) => handleDreamClick(dream.id, e)}
             >
-              {dream.title}
+              {
+                dream.title.length > 19 
+                  ? dream.title.slice(0, 19) + '...'
+                  : dream.title  
+              }
             </ListItemButton>
           ))
         }
