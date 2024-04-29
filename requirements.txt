@@ -37,6 +37,8 @@ IDEAS FOR LATER VERSIONS
 - other types of data visualizations:
   - timeline, so that user can see development of dreams over time and correlate them to events in their life; add notes to dream at a later date, if dream proved prophetic
   - network graph, to show which topics are connected (like in Obsidian)
+-App *must* be possible to navigate with keyboard instead of mouse
+
 
 
 GENERAL
