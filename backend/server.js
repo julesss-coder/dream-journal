@@ -10,7 +10,10 @@ const mySQL = require('mysql');
 const express = require('express');
 const app = express();
 const port = 8000;
+app.use(express.json());
 const util = require('util');
+
+let dreams = [{id: 1, title: "test"}, {id: 2, title: "test again"}];
 
 const connection = mySQL.createConnection({
   host: 'localhost',
@@ -71,23 +74,30 @@ connection.connect((error) => {
     return insertDummyDreams();
   })
   .then(() => console.log("Dummy data inserted successfully into tables."))
-  .catch((error) => console.error(error))
-  .finally(() => {
-    connection.end(error => {
-      if (error) {
-        console.error("Error ending the connection: ", error);
-      } else {
-        console.log("Connection to MySQL database ended.");
-      }
-    });
-  });
+  .catch((error) => console.error(error));
 });
 
 // Routes
+/*
+  on get request to this route:
+    read tables `dreams`, `tags` and `dreams_tags` from database `dreams`
+    send data to client
+
+*/
 app.get('/', (request, response) => {
   console.log("request: ", request.method, request.url);
-  response.send("Hello, world!");
+
+  return query("SHOW DATABASES LIKE 'dreams'")
+    .then(() => {
+      return query('SELECT * FROM dreamlog');
+    })
+    .then(dreamlogData => {
+      console.log("dreamlog table data: ", dreamlogData);
+      response.status(200).json(dreamlogData);
+    })
+    .catch((error) => console.error(error));
 });
+
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);

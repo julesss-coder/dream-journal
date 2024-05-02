@@ -1,11 +1,12 @@
-- [ ] Set password for database
+- [x] Set password for database
 - [ ] Add database security
 - [x] Create `dreams` database.
 - [x] Create table `dreams`.
 - [x] Create table `tags`.
 - [ ] Create table `users`.
 - [x] Create table `dream_tags`, describing the m:n relationship between `dreams` and `tags`.
-- [ ] Add data to tables `dreams`, `tags` and `dream_tags`.
+- [x] Add dummy data to tables `dreams`, `tags` and `dream_tags`.
+- [ ] Set up route that reads data from `dreams` and test with postman etc.
 
 QUESTIONS   
 - Do I need to adapt the frontend to the new database structure, ie. create a `tags` database and add the tags there instead of to `dreams`?
