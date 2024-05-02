@@ -5,6 +5,7 @@ identification methods, passwords, etc. need to be configured for each user sepa
 */
 
 require('dotenv').config();
+const insertDummyDreams = require('./insertDummyDreams');
 const mySQL = require('mysql');
 const express = require('express');
 const app = express();
@@ -67,9 +68,18 @@ connection.connect((error) => {
   })
   .then(() => {
     console.log("Table `drams_tags` created, or already exists.");
+    return insertDummyDreams();
   })
-  .catch((error) => {
-    throw error;
+  .then(() => console.log("Dummy data inserted successfully into tables."))
+  .catch((error) => console.error(error))
+  .finally(() => {
+    connection.end(error => {
+      if (error) {
+        console.error("Error ending the connection: ", error);
+      } else {
+        console.log("Connection to MySQL database ended.");
+      }
+    });
   });
 });
 
