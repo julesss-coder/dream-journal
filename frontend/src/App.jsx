@@ -62,7 +62,7 @@ function App() {
       "userId": 1, // TODO Change depending on user logged in
       "title": "test",
       "description": "",
-      "tags": [],
+      "tags": [], 
       "dateCreated": new Date(Date.now()).toUTCString(),
       "lastEdited": null,
     };
