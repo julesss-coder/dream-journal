@@ -19,7 +19,9 @@ function App() {
   useEffect(() => {
     const fetchDreams = async () => {
       try {
-        let response = await fetch('http://localhost:4000/dreams');
+        // let response = await fetch('http://localhost:4000/dreams');
+        let response = await fetch('http://localhost:8000');
+
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }

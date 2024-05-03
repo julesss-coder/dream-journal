@@ -136,7 +136,8 @@ function DreamEditor({
                 multiline
                 fullWidth
               />
-              <TextField
+              {/* Tags are not part of the data from `dreamlog` table. Fix this once data from `tags` and `dreams_tags` is sent to client and is combined with dreams data. */}
+              {/* <TextField
                 id="dream-tags"
                 label="Dream tags"
                 defaultValue={dream.tags.join(", ")}
@@ -149,7 +150,7 @@ function DreamEditor({
                 }}
                 fullWidth
                 multiline
-              />
+              /> */}
             </Box>
           ))
         )
