@@ -5,12 +5,14 @@ identification methods, passwords, etc. need to be configured for each user sepa
 */
 
 require('dotenv').config();
+const cors = require("cors")
 const insertDummyDreams = require('./insertDummyDreams');
 const mySQL = require('mysql');
 const express = require('express');
 const app = express();
 const port = 8000;
 app.use(express.json());
+app.use(cors());
 const util = require('util');
 
 let dreams = [{id: 1, title: "test"}, {id: 2, title: "test again"}];
