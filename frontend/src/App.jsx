@@ -27,7 +27,18 @@ function App() {
         }
 
         let data = await response.json();
-        setDreams(data);
+
+        /*
+        Here we get data from tables `dreamlog`, `tags` and `dreams_tags`. 
+        Combine these before setting dreams.
+
+
+
+        */
+        console.log("data from backend: ", data);
+
+
+        // setDreams(data);
       } catch (error) {
         console.error('A problem occurred when fetching the data: ', error);
       }

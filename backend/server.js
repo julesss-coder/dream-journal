@@ -72,7 +72,7 @@ connection.connect((error) => {
     )`);
   })
   .then(() => {
-    console.log("Table `drams_tags` created, or already exists.");
+    console.log("Table `dreams_tags` created, or already exists.");
     return insertDummyDreams();
   })
   .then(() => console.log("Dummy data inserted successfully into tables."))
@@ -88,6 +88,7 @@ connection.connect((error) => {
 */
 app.get('/', (request, response) => {
   console.log("request: ", request.method, request.url);
+  let dreamData = {};
 
   return query("SHOW DATABASES LIKE 'dreams'")
     .then(() => {
@@ -95,7 +96,32 @@ app.get('/', (request, response) => {
     })
     .then(dreamlogData => {
       console.log("dreamlog table data: ", dreamlogData);
-      response.status(200).json(dreamlogData);
+      // Format dreamlogData into an object where the dream ids are the keys
+      const dreams = {};
+      for (const dream of dreamlogData) {
+        dreams[dream.id] = dream;
+      }
+
+      dreamData.dreams = dreams;
+      return query('SELECT * FROM tags');
+    })
+    .then((tagData) => {
+      const tags = {};
+      for (const tag of tagData) {
+        tags[tag.id] = tag;
+      }
+      dreamData.tags = tags;
+      return query('SELECT * FROM dreams_tags');
+    })
+    .then((dreamsAndTagsData) => {
+      const dreamIdTagIdPair = {};
+
+      for (const tagPair of dreamsAndTagsData) {
+        // Set dream_id as key of object
+        dreamIdTagIdPair[tagPair.dream_id] = tagPair;
+      }
+      dreamData.dreamIdTagIdPair = dreamIdTagIdPair;
+      response.status(200).json(dreamData);
     })
     .catch((error) => console.error(error));
 });
