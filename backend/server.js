@@ -125,9 +125,8 @@ app.get('/', (request, response) => {
     .catch((error) => console.error(error));
 });
 
+// Add a dream
 app.post("/", (request, response) => {
-  console.log("request.body: ", request.body);
-
   return query("SHOW DATABASES LIKE 'dreams'")
     .then(() => {
       let sql = `INSERT INTO dreamlog VALUES (?, ?, ?, ?, ?, NOW(), NULL)`;
@@ -140,8 +139,26 @@ app.post("/", (request, response) => {
       console.log("Successfully added new dream to database 'dreamlog'.");
       response.status(200).json({message: "Received POST request"});
     })
-    .catch((error) => console.error(error));
+  // TODO Update tables `tags` and `dreams_tags` as well
 
+    .catch((error) => console.error(error));
+});
+
+// Delete a dream
+app.delete("/", (request, response) => {
+  console.log("request.body: ", request.body);
+  const {dreamId} = request.body;
+  console.log("id: ", typeof dreamId);
+  let sql = 'DELETE FROM `dreamlog` WHERE `id` = ?';
+  sql = mySQL.format(sql, dreamId);
+
+  return query(sql)
+  .then(() => {
+    console.log(`Successfully deleted dream with dreamid ${dreamId}.`);
+    response.status(200).json({message: `Successfully deleted dream with dreamid ${dreamId}.`})
+  })
+  // TODO Update tables `tags` and `dreams_tags` as well
+  .catch(error => console.error(error));
 });
 
 

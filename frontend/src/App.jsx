@@ -72,16 +72,6 @@ function App() {
   
   // TODO: Why does this return 0 as the `newDreamId` the first time it is called?
   const handleAddDream = () => {
-    /*
-    Adding a dream to mySQL database:
-      get net dream id
-      create new dream
-      Store new dream in database
-      Fetch dreams from database
-
-    */
-
-
     let newDreamId = getLastDreamId() + 1;
 
     let newDream = {
@@ -141,12 +131,22 @@ function App() {
   };
 
   const handleDeleteDream = () => {
+    fetch('http://localhost:8000', {
+      method: 'DELETE', 
+      headers: {
+        'Content-type': 'application/json',
+      },
+      body: JSON.stringify({dreamId: selectedDreamId})
+    });
+
+    // Setting `dreams` in the local state triggers effect that fetches dreams from database, so it is not necessary. => How to solve this?
     setDreams(prevDreams => {
       return prevDreams.filter(dream => {
         return selectedDreamId !== dream.id;
       });
     });
     setSelectedDreamId(null);
+    setDreamsUpdated(true);
   };
 
   console.log("dreams: ", dreams);
