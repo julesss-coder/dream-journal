@@ -161,6 +161,11 @@ app.delete("/", (request, response) => {
   .catch(error => console.error(error));
 });
 
+app.put("/", (request, response) => {
+  console.log(request.body);
+  response.send("PUT request received");
+});
+
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);

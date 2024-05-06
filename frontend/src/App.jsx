@@ -114,6 +114,15 @@ function App() {
         });
       });
     } else {
+      fetch('http://localhost:8000', {
+        method: 'PUT', 
+        headers: {
+          'Content-type': 'application/json',
+        },
+        body: JSON.stringify({dreamId, prop, value})
+      });
+
+
       setDreams(prevDreams => {
         return prevDreams.map(dream => {
           if (dream.id === dreamId) {
