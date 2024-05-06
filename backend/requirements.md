@@ -6,7 +6,10 @@
 - [ ] Create table `users`.
 - [x] Create table `dream_tags`, describing the m:n relationship between `dreams` and `tags`.
 - [x] Add dummy data to tables `dreams`, `tags` and `dream_tags`.
-- [ ] Set up route that reads data from `dreams` and test with postman etc.
+
+GOAL
+- [x] Path for adding dream. Save new dream and display it in frontend.
+- [ ] Path for deleting dream. Update database display it in frontend.
 
 QUESTIONS   
 - Do I need to adapt the frontend to the new database structure, ie. create a `tags` database and add the tags there instead of to `dreams`?
