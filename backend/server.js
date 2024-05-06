@@ -87,15 +87,14 @@ connection.connect((error) => {
 
 */
 app.get('/', (request, response) => {
-  console.log("request: ", request.method, request.url);
   let dreamData = {};
 
+  // Do I need to use prepared statements in all cases, or only where values are inserted?
   return query("SHOW DATABASES LIKE 'dreams'")
     .then(() => {
       return query('SELECT * FROM dreamlog');
     })
     .then(dreamlogData => {
-      console.log("dreamlog table data: ", dreamlogData);
       // Format dreamlogData into an object where the dream ids are the keys
       const dreams = {};
       for (const dream of dreamlogData) {
@@ -124,6 +123,25 @@ app.get('/', (request, response) => {
       response.status(200).json(dreamData);
     })
     .catch((error) => console.error(error));
+});
+
+app.post("/", (request, response) => {
+  console.log("request.body: ", request.body);
+
+  return query("SHOW DATABASES LIKE 'dreams'")
+    .then(() => {
+      let sql = `INSERT INTO dreamlog VALUES (?, ?, ?, ?, ?, NOW(), NULL)`;
+      let valuesToInsert = Object.values(request.body);
+      console.log("valuesToInsert: ", valuesToInsert);
+      sql = mySQL.format(sql, valuesToInsert);
+      return query(sql);
+    })
+    .then(() => {
+      console.log("Successfully added new dream to database 'dreamlog'.");
+      response.status(200).json({message: "Received POST request"});
+    })
+    .catch((error) => console.error(error));
+
 });
 
 

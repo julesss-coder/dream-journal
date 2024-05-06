@@ -15,6 +15,7 @@ function App() {
   const [dreams, setDreams] = useState([]);
   const [open, setOpen] = React.useState(false);
   const [selectedDreamId, setSelectedDreamId] = useState(null);
+  const [dreamsUpdated, setDreamsUpdated] = useState(true);
 
   useEffect(() => {
     const fetchDreams = async () => {
@@ -36,18 +37,20 @@ function App() {
 
         */
         console.log("data from backend: ", data);
-
-
-        // setDreams(data);
+        setDreams(Object.values(data.dreams));
       } catch (error) {
         console.error('A problem occurred when fetching the data: ', error);
       }
     };
 
-    // Once this is a fullstack project, this should run 1) on first render only. On every change to a dream, I will update both the local state and the database, so they should have the same data. 
-    // It should also run 2) when an error is thrown, to make sure that the local state and the database have the same data, 3) on a page refresh, 3) periodically, in case this app ever support real-time updates (for example, if multiple users can update the same dream at the same time).
-    fetchDreams();
-  }, []);
+    // Once this is a fullstack project, this should run and fetch the updated dreams lit 1) on first render, 2) when a dream is added, 3) when a dream is deleted. 4) Also on every change to a dream? Debounce? Or only when navigating away from input field?  
+    // It should also run 5) when an error is thrown, to make sure that the local state and the database have the same data, 3) on a page refresh, 6) periodically, in case this app ever support real-time updates (for example, if multiple users can update the same dream at the same time).
+    if (dreamsUpdated === true) {
+      console.log("useEffect runs");
+      fetchDreams();
+      setDreamsUpdated(false);
+    }
+  }, [dreamsUpdated]);
 
   const getLastDreamId = () => {
     let lastDreamId = -1;
@@ -66,8 +69,19 @@ function App() {
     setSelectedDreamId(dreamId);
     setOpen(false);
   };
-
+  
+  // TODO: Why does this return 0 as the `newDreamId` the first time it is called?
   const handleAddDream = () => {
+    /*
+    Adding a dream to mySQL database:
+      get net dream id
+      create new dream
+      Store new dream in database
+      Fetch dreams from database
+
+    */
+
+
     let newDreamId = getLastDreamId() + 1;
 
     let newDream = {
@@ -75,12 +89,22 @@ function App() {
       "userId": 1, // TODO Change depending on user logged in
       "title": "test",
       "description": "",
-      "tags": [], 
+      "thoughts": "No thoughts just yet.",
       "dateCreated": new Date(Date.now()).toUTCString(),
       "lastEdited": null,
     };
 
+    fetch('http://localhost:8000', {
+      method: 'POST', 
+      headers: {
+        'Content-type': 'application/json',
+      },
+      body: JSON.stringify(newDream),
+    })
+    .then(response => console.log("response: ", response));
+
     setDreams(prevDreams => [...prevDreams, newDream]);
+    setDreamsUpdated(true);
     setSelectedDreamId(newDreamId);
   };
 
