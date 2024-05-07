@@ -99,7 +99,9 @@ function App() {
   };
 
   const handleFormInput = (dreamId, prop, value) => {
+    console.log("handleFormInput() runs");
     if (prop === "tags") {
+      console.log("tags: ", value);
       setDreams(prevDreams => {
         return prevDreams.map(dream => {
           if (dream.id === dreamId) {
@@ -136,6 +138,7 @@ function App() {
           }
         });
       });
+      setDreamsUpdated(true);
     }
   };
 

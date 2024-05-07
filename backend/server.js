@@ -191,8 +191,18 @@ app.delete("/", (request, response) => {
 });
 
 app.put("/", (request, response) => {
-  console.log(request.body);
-  response.send("PUT request received");
+  const {dreamId, prop, value} = request.body;
+  console.log(dreamId, prop, value);
+
+  // update dreamlog set prop = value, lastEdited = now() where id = dreamId
+  let sql = 'UPDATE `dreamlog` SET ?? = ?, lastEdited = NOW() WHERE id = ?';
+  sql = mySQL.format(sql, [prop, value, dreamId]);
+  return query(sql)
+  .then(() => {
+    console.log(`Successfully updated dream with dreamId ${dreamId}.`);
+    response.send(`Successfully updated dream with dreamId ${dreamId}.`);
+  })
+  .catch(error => console.log(error));
 });
 
 

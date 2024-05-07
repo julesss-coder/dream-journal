@@ -12,6 +12,13 @@ GOAL
 - [x] Path for deleting dream. Update database display it in frontend.
 - [ ] Path for updating new dream. Update database and display u pdated data in frontend.
 - [ ] Update tags on all crud operations
+    - [x] on delete
+    - [ ] on add: not necessary - no tags in newly created dream
+    - [x] in `insertDummyDreams()`
+    - [ ] on update
+        - [x] Update content except tags
+        - [ ] Update tags
+- [*] Display tags in frontend on read operation - see `data` in App.js, line 39
 - [ ] Frontend: Set `dreamsUpdated` instead of setting `dreams` in local state
 
 QUESTIONS   
