@@ -148,12 +148,15 @@ function App() {
       body: JSON.stringify({dreamId: selectedDreamId})
     });
 
+    // Update dreams
     // Setting `dreams` in the local state triggers effect that fetches dreams from database, so it is not necessary. => How to solve this?
     setDreams(prevDreams => {
       return prevDreams.filter(dream => {
         return selectedDreamId !== dream.id;
       });
     });
+
+    // Update tags
     setSelectedDreamId(null);
     setDreamsUpdated(true);
   };

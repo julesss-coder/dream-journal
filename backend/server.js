@@ -95,6 +95,19 @@ app.get('/', (request, response) => {
       return query('SELECT * FROM dreamlog');
     })
     .then(dreamlogData => {
+      // if no dreams in dreamlog, insert dummy dreams and fetch data again (on page refresh)
+      if (dreamlogData.length === 0) {
+        insertDummyDreams();
+        // return insertDummyDreams()
+        // .then(() => {
+        //   return query('SELECT * FROM dreamlog');
+        // })
+      } else {
+        return dreamlogData;
+      }
+    })
+    .then((dreamlogData) => {
+      console.log("dreamLogData: ", dreamlogData);
       // Format dreamlogData into an object where the dream ids are the keys
       const dreams = {};
       for (const dream of dreamlogData) {
@@ -186,3 +199,6 @@ app.put("/", (request, response) => {
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
+
+
+// TODO when do I need to end the connection to sql?

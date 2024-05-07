@@ -49,7 +49,7 @@ const insertDummyDreams = () => {
   })
   .then(() => console.log("Dummy data inserted into `dreamTags`."))
   .catch(error => console.error(error))
-  .finally(() => connection.end());
+  // .finally(() => connection.end());
 };
 
 module.exports = insertDummyDreams;
