@@ -9,7 +9,10 @@
 
 GOAL
 - [x] Path for adding dream. Save new dream and display it in frontend.
-- [ ] Path for deleting dream. Update database display it in frontend.
+- [x] Path for deleting dream. Update database display it in frontend.
+- [ ] Path for updating new dream. Update database and display u pdated data in frontend.
+- [ ] Update tags on all crud operations
+- [ ] Frontend: Set `dreamsUpdated` instead of setting `dreams` in local state
 
 QUESTIONS   
 - Do I need to adapt the frontend to the new database structure, ie. create a `tags` database and add the tags there instead of to `dreams`?

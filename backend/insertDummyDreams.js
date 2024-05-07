@@ -36,7 +36,7 @@ const insertDummyDreams = () => {
   })
   .then(() => console.log("Dummy data inserted into `tags`."))    
   .then(() => {
-    return query(`INSERT IGNORE INTO dreams_tags
+    return query(`INSERT IGNORE INTO dreamTags
     VALUES
       (1, 1),
       (2, 2),
@@ -47,7 +47,7 @@ const insertDummyDreams = () => {
       (4, 7)
     `)
   })
-  .then(() => console.log("Dummy data inserted into `dreams_tags`."))
+  .then(() => console.log("Dummy data inserted into `dreamTags`."))
   .catch(error => console.error(error))
   .finally(() => connection.end());
 };

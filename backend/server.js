@@ -56,14 +56,14 @@ connection.connect((error) => {
   .then(() => {
     console.log("Table `dreamlog` created, or already exists.");
     return query(`CREATE TABLE IF NOT EXISTS tags (
-      id INT PRIMARY KEY, 
+      id INT PRIMARY KEY AUTO_INCREMENT, 
       tag VARCHAR(255), 
       UNIQUE (tag)
     )`);
   })
   .then(() => {
     console.log("Table `tags` created, or already exists.");
-    return query(`CREATE TABLE IF NOT EXISTS dreams_tags (
+    return query(`CREATE TABLE IF NOT EXISTS dreamTags (
       dream_id INT,
       tag_id INT,
       PRIMARY KEY (dream_id, tag_id),
@@ -72,7 +72,7 @@ connection.connect((error) => {
     )`);
   })
   .then(() => {
-    console.log("Table `dreams_tags` created, or already exists.");
+    console.log("Table `dreamTags` created, or already exists.");
     return insertDummyDreams();
   })
   .then(() => console.log("Dummy data inserted successfully into tables."))
@@ -110,7 +110,7 @@ app.get('/', (request, response) => {
         tags[tag.id] = tag;
       }
       dreamData.tags = tags;
-      return query('SELECT * FROM dreams_tags');
+      return query('SELECT * FROM dreamTags');
     })
     .then((dreamsAndTagsData) => {
       const dreamIdTagIdPair = {};
@@ -149,15 +149,31 @@ app.delete("/", (request, response) => {
   console.log("request.body: ", request.body);
   const {dreamId} = request.body;
   console.log("id: ", typeof dreamId);
-  let sql = 'DELETE FROM `dreamlog` WHERE `id` = ?';
-  sql = mySQL.format(sql, dreamId);
 
+  // Delete the current dream's id from `dreamTags`, as it is a foreign key there (as `dream_id`)
+  sql = 'DELETE FROM `dreamTags` WHERE `dream_id` = ?';
+  sql = mySQL.format(sql, dreamId);
   return query(sql)
   .then(() => {
-    console.log(`Successfully deleted dream with dreamid ${dreamId}.`);
-    response.status(200).json({message: `Successfully deleted dream with dreamid ${dreamId}.`})
+    console.log(`Successfully deleted entry in 'dreamTags' with dream_id ${dreamId}.`);
+
+    // Delete all tags whose ids are not listed in the tag_id column of dreamTags
+    sql = 'DELETE FROM `tags` WHERE `id` NOT IN (SELECT `tag_id` FROM `dreamTags`)';
+    sql = mySQL.format(sql);
+    return query(sql);
   })
-  // TODO Update tables `tags` and `dreams_tags` as well
+  .then(() => {
+    console.log("Successfully deleted all tags from `tags` that are not referenced in `dreamTags`.");
+    
+    // Delete dream from `dreamlog`
+    let sql = 'DELETE FROM `dreamlog` WHERE `id` = ?';
+    sql = mySQL.format(sql, dreamId);
+    return query(sql);
+  })
+  .then(() => {
+    console.log(`Successfully deleted dream with dreamid ${dreamId}.`);
+    response.status(200).json({message: `Successfully deleted dream with dreamid ${dreamId} and it tags and tag references.`});
+  })
   .catch(error => console.error(error));
 });
 
