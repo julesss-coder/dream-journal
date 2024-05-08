@@ -16,6 +16,7 @@ function App() {
   const [open, setOpen] = React.useState(false);
   const [selectedDreamId, setSelectedDreamId] = useState(null);
   const [dreamsUpdated, setDreamsUpdated] = useState(true);
+  const [tagData, setTagData] = useState(null);
 
   useEffect(() => {
     const fetchDreams = async () => {
@@ -37,6 +38,7 @@ function App() {
 
         */
         console.log("data from backend: ", data);
+        setTagData({ tags: data.tags, dreamIdTagIdPair: data.dreamIdTagIdPair});
         setDreams(Object.values(data.dreams));
       } catch (error) {
         console.error('A problem occurred when fetching the data: ', error);
@@ -115,6 +117,52 @@ function App() {
           }
         });
       });
+
+      /*
+      Change data model to deal with tags: in current model, if changing the tag text for a tag used in one dream, it is also changed in the other dreams, but that should not be the case.
+
+      ----------
+      CoPilot: 
+
+      You're correct. If tags are shared between dreams and can be edited independently by each dream, then updating the tag directly would affect all dreams that use that tag, which could lead to incorrect data.
+
+      In this case, you might want to consider a different data model. Instead of having a many-to-many relationship between dreams and tags, you could have a one-to-many relationship between dreams and tags, and a many-to-one relationship between tags and dreams.
+
+      This means that each dream has its own set of tags, and each tag can be associated with multiple dreams. When a tag is edited in one dream, a new tag is created and associated with that dream, but the original tag remains unchanged for the other dreams.
+
+      Here's how you can implement this:
+
+      1. When a tag is added to a dream, add a new entry to the `tags` table with the tag text and dream id, and get the id of the new tag.
+
+      2. When a tag is edited in a dream, add a new entry to the `tags` table with the updated tag text and dream id
+      -------------
+
+      STRATEGY 1  **
+      add tag to tags table
+      each time tags are changed, update the whole entry in tags table? ie delete content and start table again? 
+      lottery (id 1), money (id 2)
+      if lottery is changed:
+        update content of tag with id 1
+        no need to update dreamTags
+
+      else if lottery is deleted:
+        update dreamTags
+        if tagId is not in dreamTags anymore:
+          delete this tag from tags table
+
+      STRATEGY 2
+      Store tags as one string
+      SPlit by "," only when displaying them in the frontend - then no tables `tags` and `dreamTags` necessary
+      BUT necessary for creating tag cloud:
+        When showing tag cloud:
+          // Delete content of tags and dreamTags table?
+          For each dream in `dreamLog`:
+            For each tag in dream:
+              Add it to table `tags` with tag_id and text
+              Add dreamId and tagId to table `dreamTags`
+
+      */
+
     } else {
       fetch('http://localhost:8000', {
         method: 'PUT', 
@@ -201,6 +249,7 @@ function App() {
         selectedDreamId={selectedDreamId}
         handleDeleteDream={handleDeleteDream}
         dreams={dreams}
+        tagData={tagData}
         handleFormInput={handleFormInput}
       />
 

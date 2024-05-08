@@ -18,7 +18,7 @@ GOAL
     - [ ] on update
         - [x] Update content except tags
         - [ ] Update tags
-- [*] Display tags in frontend on read operation - see `data` in App.js, line 39
+- [x] Display tags in frontend on read operation - see `data` in App.js, line 39
 - [ ] Frontend: Set `dreamsUpdated` instead of setting `dreams` in local state
 
 QUESTIONS   
