@@ -15,8 +15,6 @@ app.use(express.json());
 app.use(cors());
 const util = require('util');
 
-let dreams = [{id: 1, title: "test"}, {id: 2, title: "test again"}];
-
 const connection = mySQL.createConnection({
   host: 'localhost',
   user: 'dreamjournaluser',
@@ -43,100 +41,114 @@ connection.connect((error) => {
     }
   })
   .then(() => {
-    return query(`CREATE TABLE IF NOT EXISTS dreamlog (
-      id INT PRIMARY KEY, 
-      userid INT, 
+    return query(`CREATE TABLE IF NOT EXISTS dream_log (
+      dream_id INT PRIMARY KEY, 
+      user_id INT, 
       title VARCHAR(255), 
       description TEXT, 
       thoughts TEXT, 
-      dateCreated DATETIME, 
-      lastEdited DATETIME
+      date_created DATETIME, 
+      last_edited DATETIME
     )`);
   })
   .then(() => {
-    console.log("Table `dreamlog` created, or already exists.");
-    return query(`CREATE TABLE IF NOT EXISTS tags (
-      id INT PRIMARY KEY AUTO_INCREMENT, 
-      tag VARCHAR(255), 
-      UNIQUE (tag)
-    )`);
-  })
-  .then(() => {
-    console.log("Table `tags` created, or already exists.");
-    return query(`CREATE TABLE IF NOT EXISTS dreamTags (
+    console.log("Table `dream_log` created, or already exists.");
+    return query(`CREATE TABLE IF NOT EXISTS dream_tags (
       dream_id INT,
-      tag_id INT,
-      PRIMARY KEY (dream_id, tag_id),
-      FOREIGN KEY (dream_id) REFERENCES dreamlog(id),
-      FOREIGN KEY (tag_id) REFERENCES tags(id)
+      tag_id INT AUTO_INCREMENT,
+      tag_text VARCHAR(255),
+      PRIMARY KEY (tag_id)
     )`);
   })
   .then(() => {
-    console.log("Table `dreamTags` created, or already exists.");
-    return insertDummyDreams();
+    console.log("Table `dream_tags` created, or already exists.");
+    // Add dummy dreams if table `dream_log` is empty
+    return query('SELECT * FROM dream_log');
   })
-  .then(() => console.log("Dummy data inserted successfully into tables."))
+  .then(dreamLogData => {
+    if (dreamLogData.length === 0) {
+      return query(`INSERT INTO dream_log 
+        VALUES 
+        (1, 1, "Flying in the sky", "I had a dream where I was flying above the clouds.", "Don't know yet", NOW(), NOW()),
+        (2, 2, "Meeting a celebrity", "I dreamt that I met my favorite actor Christian Bale and we had a conversation.", "Don't know yet", NOW(), NOW()),
+        (3, 2, "Winning the lottery", "I dreamt that I won the lottery jackpot without even playing.", "Don't know yet", NOW(), NOW())`)
+      .then(() => {console.log("Dummy data inserted into table `dream_log`.")})
+    }
+  })
+  .then(() => {
+    return query('SELECT * FROM dream_tags');
+  })
+  .then((dreamtagData) => {
+    // Add dummy tags if table `dream_tags` is empty
+    if (dreamtagData.length === 0) {
+      return query(`INSERT INTO dream_tags (dream_id, tag_text)
+        VALUES
+        (1, "flying"),
+        (2, "celebrity"),
+        (3, "winning"),
+        (3, "money"),
+        (3, "lottery"),
+        (4, "alternateReality"), 
+        (4, "dailyLife")
+      `)
+      .then(() => console.log('Dummy data inserted into table `dream_tags`.'));
+    }
+  })
   .catch((error) => console.error(error));
 });
 
 // Routes
-/*
-  on get request to this route:
-    read tables `dreams`, `tags` and `dreams_tags` from database `dreams`
-    send data to client
+// app.get('/', (request, response) => {
+//   let dreamData = {};
 
-*/
-app.get('/', (request, response) => {
-  let dreamData = {};
+//   // Do I need to use prepared statements in all cases, or only where values are inserted?
+//   return query("SHOW DATABASES LIKE 'dreams'")
+//     .then(() => {
+//       return query('SELECT * FROM dream_log');
+//     })
+//     .then(dreamlogData => {
+//       // if no dreams in dreamlog, insert dummy dreams and fetch data again (on page refresh)
+//       if (dreamlogData.length === 0) {
+//         insertDummyDreams();
+//         // return insertDummyDreams()
+//         // .then(() => {
+//         //   return query('SELECT * FROM dreamlog');
+//         // })
+//       } else {
+//         return dreamlogData;
+//       }
+//     })
+//     .then((dreamlogData) => {
+//       console.log("dreamLogData: ", dreamlogData);
+//       // Format dreamlogData into an object where the dream ids are the keys
+//       const dreams = {};
+//       for (const dream of dreamlogData) {
+//         dreams[dream.id] = dream;
+//       }
 
-  // Do I need to use prepared statements in all cases, or only where values are inserted?
-  return query("SHOW DATABASES LIKE 'dreams'")
-    .then(() => {
-      return query('SELECT * FROM dreamlog');
-    })
-    .then(dreamlogData => {
-      // if no dreams in dreamlog, insert dummy dreams and fetch data again (on page refresh)
-      if (dreamlogData.length === 0) {
-        insertDummyDreams();
-        // return insertDummyDreams()
-        // .then(() => {
-        //   return query('SELECT * FROM dreamlog');
-        // })
-      } else {
-        return dreamlogData;
-      }
-    })
-    .then((dreamlogData) => {
-      console.log("dreamLogData: ", dreamlogData);
-      // Format dreamlogData into an object where the dream ids are the keys
-      const dreams = {};
-      for (const dream of dreamlogData) {
-        dreams[dream.id] = dream;
-      }
+//       dreamData.dreams = dreams;
+//       return query('SELECT * FROM tags');
+//     })
+//     .then((tagData) => {
+//       const tags = {};
+//       for (const tag of tagData) {
+//         tags[tag.id] = tag;
+//       }
+//       dreamData.tags = tags;
+//       return query('SELECT * FROM dreamTags');
+//     })
+//     .then((dreamsAndTagsData) => {
+//       const dreamIdTagIdPair = {};
 
-      dreamData.dreams = dreams;
-      return query('SELECT * FROM tags');
-    })
-    .then((tagData) => {
-      const tags = {};
-      for (const tag of tagData) {
-        tags[tag.id] = tag;
-      }
-      dreamData.tags = tags;
-      return query('SELECT * FROM dreamTags');
-    })
-    .then((dreamsAndTagsData) => {
-      const dreamIdTagIdPair = {};
-
-      for (const tagPair of dreamsAndTagsData) {
-        // Set dream_id as key of object
-        dreamIdTagIdPair[tagPair.dream_id] = tagPair;
-      }
-      dreamData.dreamIdTagIdPair = dreamIdTagIdPair;
-      response.status(200).json(dreamData);
-    })
-    .catch((error) => console.error(error));
-});
+//       for (const tagPair of dreamsAndTagsData) {
+//         // Set dream_id as key of object
+//         dreamIdTagIdPair[tagPair.dream_id] = tagPair;
+//       }
+//       dreamData.dreamIdTagIdPair = dreamIdTagIdPair;
+//       response.status(200).json(dreamData);
+//     })
+//     .catch((error) => console.error(error));
+// });
 
 // Add a dream
 app.post("/", (request, response) => {
