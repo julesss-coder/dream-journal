@@ -13,7 +13,7 @@ const query = util.promisify(connection.query).bind(connection);
 const insertDummyDreams = () => {
   return query(`USE dreams`)
   .then(() => {
-    return query(`INSERT IGNORE INTO dream_log 
+    return query(`INSERT INTO dream_log 
     VALUES 
     (1, 1, "Flying in the sky", "I had a dream where I was flying above the clouds.", "Don't know yet", NOW(), NOW()),
     (2, 2, "Meeting a celebrity", "I dreamt that I met my favorite actor Christian Bale and we had a conversation.", "Don't know yet", NOW(), NOW()),

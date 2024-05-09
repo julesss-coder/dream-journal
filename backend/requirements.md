@@ -2,11 +2,13 @@
 - [x] Set password for database
 - [ ] Add database security
 - [x] Create `dreams` database.
-- [x] Create table `dreams`.
-- [x] Create table `tags`.
+- [x] Create table `dream_log`.
+- [x] Create table `dream_tags`.
 - [ ] Create table `users`.
-- [x] Create table `dream_tags`, describing the m:n relationship between `dreams` and `tags`.
-- [x] Add dummy data to tables `dreams`, `tags` and `dream_tags`.
+- [x] Add dummy data to tables `dream_log` and `dream_tags`.
+
+- [*] Update serverside code for all routes after changing database design.
+- [ ] Update clientside code for all crud operations after changing database design.
 - [ ] Use transactions when updating dream tags? Or in general?
 
 ## Requirements for tags in dream view

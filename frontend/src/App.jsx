@@ -21,7 +21,6 @@ function App() {
   useEffect(() => {
     const fetchDreams = async () => {
       try {
-        // let response = await fetch('http://localhost:4000/dreams');
         let response = await fetch('http://localhost:8000');
 
         if (!response.ok) {
@@ -29,16 +28,8 @@ function App() {
         }
 
         let data = await response.json();
-
-        /*
-        Here we get data from tables `dreamlog`, `tags` and `dreams_tags`. 
-        Combine these before setting dreams.
-
-
-
-        */
         console.log("data from backend: ", data);
-        setTagData({ tags: data.tags, dreamIdTagIdPair: data.dreamIdTagIdPair});
+        setTagData(Object.values(data.tags));
         setDreams(Object.values(data.dreams));
       } catch (error) {
         console.error('A problem occurred when fetching the data: ', error);
@@ -58,8 +49,8 @@ function App() {
     let lastDreamId = -1;
     if (dreams.length > 0) {
       dreams.forEach(dream => {
-        if (dream.id > lastDreamId) {
-          lastDreamId = dream.id;
+        if (dream.dream_id > lastDreamId) {
+          lastDreamId = dream.dream_id;
         }
       });
     }
@@ -67,7 +58,7 @@ function App() {
     return lastDreamId;
   };
 
-  const handleDreamClick = (dreamId, e) => {
+  const handleDreamClick = (dreamId) => {
     setSelectedDreamId(dreamId);
     setOpen(false);
   };
@@ -77,13 +68,13 @@ function App() {
     let newDreamId = getLastDreamId() + 1;
 
     let newDream = {
-      "id": newDreamId,
-      "userId": 1, // TODO Change depending on user logged in
+      "dream_id": newDreamId,
+      "user_id": 1, // TODO Change depending on user logged in
       "title": "test",
       "description": "",
       "thoughts": "No thoughts just yet.",
-      "dateCreated": new Date(Date.now()).toUTCString(),
-      "lastEdited": null,
+      "date_created": null,
+      "last_edited": null,
     };
 
     fetch('http://localhost:8000', {
@@ -106,11 +97,11 @@ function App() {
       console.log("tags: ", value);
       setDreams(prevDreams => {
         return prevDreams.map(dream => {
-          if (dream.id === dreamId) {
+          if (dream.dream_id === dreamId) {
             return {
               ...dream,
               [prop]: value.split(", ").map(tag => tag.trim()).filter(tag => tag !== ""),
-              lastEdited: new Date(Date.now()).toUTCString()
+              last_edited: new Date(Date.now()).toUTCString()
             };
           } else {
             return dream;
@@ -175,7 +166,7 @@ function App() {
 
       setDreams(prevDreams => {
         return prevDreams.map(dream => {
-          if (dream.id === dreamId) {
+          if (dream.dream_id === dreamId) {
             return {
               ...dream,
               [prop]: value,
@@ -203,7 +194,7 @@ function App() {
     // Setting `dreams` in the local state triggers effect that fetches dreams from database, so it is not necessary. => How to solve this?
     setDreams(prevDreams => {
       return prevDreams.filter(dream => {
-        return selectedDreamId !== dream.id;
+        return selectedDreamId !== dream.dream_id;
       });
     });
 
@@ -239,7 +230,7 @@ function App() {
       </IconButton>
       {/* Sider */}
       <Sider 
-      open={open}
+        open={open}
         setOpen={setOpen}
         dreams={dreams}
         handleDreamClick={handleDreamClick}

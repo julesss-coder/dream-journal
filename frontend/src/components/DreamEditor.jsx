@@ -18,22 +18,21 @@ function DreamEditor({
 }) {
   let timer;
   
-  // Should this be wrapped in a useCallback?
+  console.log("dreams in DreamEditor: ", dreams);
+  console.log("tagData in DreamEditor: ", tagData);
+
   const getCurrentTags = () => {
     const currentTags = [];
-    if (tagData && selectedDreamId) {
-      const {dreamIdTagIdPair, tags} = tagData;
-
-      // get the tags for the current dream
-      for (const dreamId in dreamIdTagIdPair) {
-        if (+dreamId === selectedDreamId) {
-          // get the corresponding tag_id
-          const tagId = dreamIdTagIdPair[dreamId].tag_id;
-          currentTags.push(tagData.tags[tagId].tag);
+  
+    if (tagData) {
+      for (const entry of tagData) {
+        if (entry.dream_id === selectedDreamId) {
+          currentTags.push(entry.tag_text);
         }
       }
+  
+      console.log("currentTags: ", currentTags);
     }
-
     return currentTags;
   };
 
@@ -89,10 +88,10 @@ function DreamEditor({
       {
         selectedDreamId && (
           dreams.filter(dream => (
-            dream.id === selectedDreamId
+            dream.dream_id === selectedDreamId
           )).map(dream => (
             <Box
-              key={dream.id}
+              key={dream.dream_id}
               sx={{
                 display: "flex",
                 flexDirection: "column",
@@ -120,13 +119,13 @@ function DreamEditor({
                 id="date-created"
                 label="Created on:"
                 disabled
-                value={dream.dateCreated}
+                value={dream.date_created}
               />
               <TextField
                 id="last-edited"
                 label="Last edited on:"
                 disabled
-                value={dream.lastEdited}
+                value={dream.last_edited}
               />
               <TextField
                 id="dream-description"
@@ -160,8 +159,7 @@ function DreamEditor({
               <TextField
                 id="dream-tags"
                 label="Dream tags"
-                // defaultValue={currentTags.join(", ")}
-                defaultValue={getCurrentTags()}
+                defaultValue={getCurrentTags().join(", ")}
                 helperText="Use this format: tag, tagConsistingOfSeveralWords"
                 onChange={(e) => {
                   clearTimeout(timer);

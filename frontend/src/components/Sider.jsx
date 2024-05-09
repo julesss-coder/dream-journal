@@ -103,13 +103,14 @@ function Sider({
               return (
                 dream.title.toLowerCase().includes(searchTerm) ||
                 dream.description.toLowerCase().includes(searchTerm) ||
-                dream.thoughts.toLowerCase().includes(searchTerm) ||
-                dream.tags.some(tag => tag.toLowerCase().includes(searchTerm))
+                dream.thoughts.toLowerCase().includes(searchTerm) 
+                // ||
+                // dream.tags.some(tag => tag.toLowerCase().includes(searchTerm))
               );
             }).map(dream => (
               <ListItemButton
-                key={dream.id}
-                onClick={(e) => handleDreamClick(dream.id, e)}
+                key={dream.dream_id}
+                onClick={(e) => handleDreamClick(dream.dream_id, e)}
               >
                 {
                   dream.title.length > 19 
@@ -127,7 +128,7 @@ function Sider({
             dreams.map(dream => (
               <ListItemButton
                 key={dream.id}
-                onClick={(e) => handleDreamClick(dream.id, e)}
+                onClick={(e) => handleDreamClick(dream.dream_id, e)}
               >
                 {
                   dream.title.length > 19 
