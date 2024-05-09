@@ -119,13 +119,13 @@ function DreamEditor({
                 id="date-created"
                 label="Created on:"
                 disabled
-                value={dream.date_created}
+                value={new Date(dream.date_created).toUTCString()}
               />
               <TextField
                 id="last-edited"
                 label="Last edited on:"
                 disabled
-                value={dream.last_edited}
+                value={new Date(dream.last_edited).toUTCString()}
               />
               <TextField
                 id="dream-description"
@@ -160,7 +160,7 @@ function DreamEditor({
                 id="dream-tags"
                 label="Dream tags"
                 defaultValue={getCurrentTags().join(", ")}
-                helperText="Use this format: tag, tagConsistingOfSeveralWords"
+                helperText="Use this format: tag, tagConsistingOfSeveralWords. Separate tags with comma."
                 onChange={(e) => {
                   clearTimeout(timer);
                   timer = setTimeout(() => {

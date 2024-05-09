@@ -110,7 +110,7 @@ function Sider({
             }).map(dream => (
               <ListItemButton
                 key={dream.dream_id}
-                onClick={(e) => handleDreamClick(dream.dream_id, e)}
+                onClick={() => handleDreamClick(dream.dream_id)}
               >
                 {
                   dream.title.length > 19 

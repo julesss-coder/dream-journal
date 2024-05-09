@@ -9,7 +9,13 @@
 
 - [*] Update serverside code for all routes after changing database design.
 - [ ] Update clientside code for all crud operations after changing database design.
+    - [x] Read dream
+        - [x] Format create date to weekday, date
+    - [x] Add dream
+    - [x] Delete dream
+    
 - [ ] Use transactions when updating dream tags? Or in general?
+- [ ] Comment out unnecessary calls to setState()
 
 ## Requirements for tags in dream view
 - [ ] Tags can be added by writing comma-separated text. If a tag consists of more than one word, write it in camelCase. Otherwise, the single words will be saved as indivual tags. 

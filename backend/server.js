@@ -65,8 +65,8 @@ connection.connect((error) => {
     // Add dummy dreams if table `dream_log` is empty
     return query('SELECT * FROM dream_log');
   })
-  .then(dreamLogData => {
-    if (dreamLogData.length === 0) {
+  .then(dream_logData => {
+    if (dream_logData.length === 0) {
       return query(`INSERT INTO dream_log 
         VALUES 
         (1, 1, "Flying in the sky", "I had a dream where I was flying above the clouds.", "Don't know yet", NOW(), NOW()),
@@ -108,10 +108,10 @@ app.get('/', (request, response) => {
     .then(() => {
       return query('SELECT * FROM dream_log');
     })
-    .then(dreamlogData => {
-      // Format dreamlogData into an object where the dream ids are the keys
+    .then(dream_logData => {
+      // Format dream_logData into an object where the dream ids are the keys
       const dreams = {};
-      for (const dream of dreamlogData) {
+      for (const dream of dream_logData) {
         dreams[dream.dream_id] = dream;
       }
 
@@ -130,53 +130,45 @@ app.get('/', (request, response) => {
 });
 
 // Add a dream
+// Table `dream_tags` is not updated, as a new dream does not have tags
 app.post("/", (request, response) => {
   return query("SHOW DATABASES LIKE 'dreams'")
     .then(() => {
-      let sql = `INSERT INTO dreamlog VALUES (?, ?, ?, ?, ?, NOW(), NULL)`;
+      let sql = `INSERT INTO dream_log VALUES (?, ?, ?, ?, ?, NOW(), NULL)`;
       let valuesToInsert = Object.values(request.body);
       console.log("valuesToInsert: ", valuesToInsert);
       sql = mySQL.format(sql, valuesToInsert);
       return query(sql);
     })
     .then(() => {
-      console.log("Successfully added new dream to database 'dreamlog'.");
+      console.log("Successfully added new dream to database 'dream_log'.");
       response.status(200).json({message: "Received POST request"});
     })
-  // TODO Update tables `tags` and `dreams_tags` as well
-
     .catch((error) => console.error(error));
 });
 
 // Delete a dream
-app.delete("/", (request, response) => {
-  console.log("request.body: ", request.body);
-  const {dreamId} = request.body;
-  console.log("id: ", typeof dreamId);
+/*
+Delete the dream with the given id from table `dream_log`
 
-  // Delete the current dream's id from `dreamTags`, as it is a foreign key there (as `dream_id`)
-  sql = 'DELETE FROM `dreamTags` WHERE `dream_id` = ?';
+In `dream_tags`: 
+  Delete all entries with the given dream_id
+*/
+app.delete("/", (request, response) => {
+  const {dreamId} = request.body;
+
+  let sql = 'DELETE FROM `dream_log` WHERE `id` = ?';
   sql = mySQL.format(sql, dreamId);
   return query(sql)
   .then(() => {
-    console.log(`Successfully deleted entry in 'dreamTags' with dream_id ${dreamId}.`);
-
-    // Delete all tags whose ids are not listed in the tag_id column of dreamTags
-    sql = 'DELETE FROM `tags` WHERE `id` NOT IN (SELECT `tag_id` FROM `dreamTags`)';
-    sql = mySQL.format(sql);
-    return query(sql);
-  })
-  .then(() => {
-    console.log("Successfully deleted all tags from `tags` that are not referenced in `dreamTags`.");
-    
-    // Delete dream from `dreamlog`
-    let sql = 'DELETE FROM `dreamlog` WHERE `id` = ?';
-    sql = mySQL.format(sql, dreamId);
-    return query(sql);
-  })
-  .then(() => {
     console.log(`Successfully deleted dream with dreamid ${dreamId}.`);
-    response.status(200).json({message: `Successfully deleted dream with dreamid ${dreamId} and it tags and tag references.`});
+    sql = 'DELETE FROM `dream_tags` WHERE `dream_id` = ?';
+    sql = mySQL.format(sql, dreamId);
+    return query(sql)
+  })
+  .then(() => {
+    console.log(`Successfully deleted entry in 'dream_tags' with dream_id ${dreamId}.`);
+    response.status(200).json({message: `Successfully deleted dream with dreamid ${dreamId} and it tags.`});
   })
   .catch(error => console.error(error));
 });
@@ -185,8 +177,8 @@ app.put("/", (request, response) => {
   const {dreamId, prop, value} = request.body;
   console.log(dreamId, prop, value);
 
-  // update dreamlog set prop = value, lastEdited = now() where id = dreamId
-  let sql = 'UPDATE `dreamlog` SET ?? = ?, lastEdited = NOW() WHERE id = ?';
+  // update dream_log set prop = value, lastEdited = now() where id = dreamId
+  let sql = 'UPDATE `dream_log` SET ?? = ?, lastEdited = NOW() WHERE id = ?';
   sql = mySQL.format(sql, [prop, value, dreamId]);
   return query(sql)
   .then(() => {

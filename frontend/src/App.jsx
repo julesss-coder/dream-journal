@@ -55,6 +55,7 @@ function App() {
       });
     }
 
+    console.log("lastDreamId: ", lastDreamId);
     return lastDreamId;
   };
 
@@ -73,6 +74,7 @@ function App() {
       "title": "test",
       "description": "",
       "thoughts": "No thoughts just yet.",
+      // Will be set in backend
       "date_created": null,
       "last_edited": null,
     };
