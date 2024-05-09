@@ -13,9 +13,29 @@ function DreamEditor({
   selectedDreamId,
   handleDeleteDream,
   dreams,
+  tagData,
   handleFormInput
 }) {
   let timer;
+  
+  // Should this be wrapped in a useCallback?
+  const getCurrentTags = () => {
+    const currentTags = [];
+    if (tagData && selectedDreamId) {
+      const {dreamIdTagIdPair, tags} = tagData;
+
+      // get the tags for the current dream
+      for (const dreamId in dreamIdTagIdPair) {
+        if (+dreamId === selectedDreamId) {
+          // get the corresponding tag_id
+          const tagId = dreamIdTagIdPair[dreamId].tag_id;
+          currentTags.push(tagData.tags[tagId].tag);
+        }
+      }
+    }
+
+    return currentTags;
+  };
 
   return (
     // Outer container
@@ -137,10 +157,11 @@ function DreamEditor({
                 fullWidth
               />
               {/* Tags are not part of the data from `dreamlog` table. Fix this once data from `tags` and `dreams_tags` is sent to client and is combined with dreams data. */}
-              {/* <TextField
+              <TextField
                 id="dream-tags"
                 label="Dream tags"
-                defaultValue={dream.tags.join(", ")}
+                // defaultValue={currentTags.join(", ")}
+                defaultValue={getCurrentTags()}
                 helperText="Use this format: tag, tagConsistingOfSeveralWords"
                 onChange={(e) => {
                   clearTimeout(timer);
@@ -150,7 +171,7 @@ function DreamEditor({
                 }}
                 fullWidth
                 multiline
-              /> */}
+              />
             </Box>
           ))
         )
