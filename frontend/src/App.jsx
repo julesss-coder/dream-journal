@@ -86,30 +86,102 @@ function App() {
       },
       body: JSON.stringify(newDream),
     })
-    .then(response => console.log("response: ", response));
+    .then(response => response.json())
+    .then(data => console.log(data.message))
+    .catch(error => console.error(error));
 
     setDreams(prevDreams => [...prevDreams, newDream]);
     setDreamsUpdated(true);
     setSelectedDreamId(newDreamId);
   };
 
+  /*
+  To reduce the number of HTTP requests, create the new tag data in the front end, so it only needs to be inserted in the backend (all entries for current dreamId deleted, new ones inserted?)
+
+  Debounce the user input on tags field: only run `handleUserInput` 300ms after keyup event. If user types again before that, timer is reset. 
+
+  Handle input and tag input separately
+
+  To change tags in backend, pass in current tag data and new tag data so we can compare it in backend
+  Get current tags for current dream:
+    [money, winning, lottery]
+
+  Changed tags are a string:
+    Turn into array `new Tags`:
+    For each element of newTags:
+      If an element was changed
+
+  */
+
+  const handleTagInput = (dreamId, value) => {
+    console.log("handleTagInput() runs, dreamId, value: ", dreamId, value);
+    // The filter operation needs to be done only the first time the tags are changed. After that, it is updated with the new tags and thus only contains entries for the current dreamId.
+    let tagsToUpdate = tagData.filter(entry => entry.dream_id === dreamId);
+    console.log("tagsToUpdate: ", tagsToUpdate);
+    // filter out additional commas
+    let updatedTags = value.split(", ").map(tag => tag.trim()).filter(tag => tag !== "");
+    // Remove duplicate entries from `updatedTags`
+    updatedTags = [...new Set(updatedTags)];
+    console.log("updatedTags: ", updatedTags);
+
+    // If there are the same number of or more tags than before:
+    // Replace the previous tags with the new ones
+    if (tagsToUpdate.length <= updatedTags.length) {
+      for (let i = 0; i < tagsToUpdate.length; i++) {
+        tagsToUpdate[i].tag_text = updatedTags[i];
+      }
+      
+      // For all the newly added tags, create new entries in tagsToUpdate
+      for (let i = tagsToUpdate.length; i < updatedTags.length; i++) {
+        let newTagEntry = {dream_id: dreamId, tag_id: null, tag_text: updatedTags[i]};
+        tagsToUpdate.push(newTagEntry);
+      }
+    }
+    // Else if there are fewer tags than before:
+    // Replace, the previous tags with the new ones
+    else if (tagsToUpdate.length > updatedTags.length) {
+      for (let i = 0; i < updatedTags.length; i++) {
+        tagsToUpdate[i].tag_text = updatedTags[i];
+      }
+    }
+
+    // Delete the rest of the previous tags
+    tagsToUpdate = tagsToUpdate.slice(0, updatedTags.length);
+    console.log("updated tagsToUpdate: ", tagsToUpdate);
+
+    fetch('http://localhost:8000/updateDreamTags', {
+      method: 'PUT', 
+      headers: {
+        'Content-type': 'application/json',
+      },
+      body: JSON.stringify({tagsToUpdate}),
+    })
+    .then(response => response.json())
+    .then(data => console.log(data.message))
+    .catch(error => console.error(error));
+
+    // TODO Before setting the local state, I need to actually update the tags in the backend.
+    // setDreamsUpdated(true);
+  };
+
+  // Handles input in dream editor form, except for tag input (see `handleTagInput()`)
   const handleFormInput = (dreamId, prop, value) => {
     console.log("handleFormInput() runs");
     if (prop === "tags") {
-      console.log("tags: ", value);
-      setDreams(prevDreams => {
-        return prevDreams.map(dream => {
-          if (dream.dream_id === dreamId) {
-            return {
-              ...dream,
-              [prop]: value.split(", ").map(tag => tag.trim()).filter(tag => tag !== ""),
-              last_edited: new Date(Date.now()).toUTCString()
-            };
-          } else {
-            return dream;
-          }
-        });
-      });
+      // console.log("tags: ", value);
+      // setDreams(prevDreams => {
+      //   return prevDreams.map(dream => {
+      //     if (dream.dream_id === dreamId) {
+      //       return {
+      //         ...dream,
+      //         [prop]: value.split(", ").map(tag => tag.trim()).filter(tag => tag !== ""),
+      //         last_edited: new Date(Date.now()).toUTCString()
+      //       };
+      //     } else {
+      //       return dream;
+      //     }
+      //   });
+      // });
 
       /*
       Change data model to deal with tags: in current model, if changing the tag text for a tag used in one dream, it is also changed in the other dreams, but that should not be the case.
@@ -157,13 +229,16 @@ function App() {
       */
 
     } else {
-      fetch('http://localhost:8000', {
+      fetch('http://localhost:8000/updateDreamLog', {
         method: 'PUT', 
         headers: {
           'Content-type': 'application/json',
         },
         body: JSON.stringify({dreamId, prop, value})
-      });
+      })
+      .then(response => response.json())
+      .then(data => console.log(data.message))
+      .catch(error => console.error(error));
 
 
       setDreams(prevDreams => {
@@ -190,7 +265,10 @@ function App() {
         'Content-type': 'application/json',
       },
       body: JSON.stringify({dreamId: selectedDreamId})
-    });
+    })
+    .then(response => response.json())
+    .then(data => console.log(data.message))
+    .catch(error => console.error(error));
 
     // Update dreams
     // Setting `dreams` in the local state triggers effect that fetches dreams from database, so it is not necessary. => How to solve this?
@@ -244,6 +322,7 @@ function App() {
         dreams={dreams}
         tagData={tagData}
         handleFormInput={handleFormInput}
+        handleTagInput={handleTagInput}
       />
 
       {/* Bottom Nav */}

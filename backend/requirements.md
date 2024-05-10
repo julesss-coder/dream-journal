@@ -7,15 +7,19 @@
 - [ ] Create table `users`.
 - [x] Add dummy data to tables `dream_log` and `dream_tags`.
 
-- [*] Update serverside code for all routes after changing database design.
+- [?] Update serverside code for all routes after changing database design.
 - [ ] Update clientside code for all crud operations after changing database design.
     - [x] Read dream
         - [x] Format create date to weekday, date
     - [x] Add dream
     - [x] Delete dream
+    - [ ] Update dream
+        - [x] Reduce number of HTTP requests - send update to backend once user stops typing
+        - [*] Implement server route for updating dream_tags table.
     
 - [ ] Use transactions when updating dream tags? Or in general?
 - [ ] Comment out unnecessary calls to setState()
+- [ ] Async in frontend (and backend): Decide between using then() and async/await. Read up on both.
 
 ## Requirements for tags in dream view
 - [ ] Tags can be added by writing comma-separated text. If a tag consists of more than one word, write it in camelCase. Otherwise, the single words will be saved as indivual tags. 
@@ -125,5 +129,16 @@ CREATE TABLE dream_tags (
     FOREIGN KEY (tag_id) REFERENCES tags(id)
 );
 
+======
 
+# Strategoes for improving the performance of web apps (GitHub CoPilot)
 
+Sure, here are descriptions of those strategies:
+
+1. **Caching**: Caching is the process of storing copies of files in a cache, or temporary storage location, so that they can be accessed more quickly. There are many different types of caching that can be implemented, including browser caching, server caching, and database caching. For example, you might cache the results of a database query so that the next time the same query is made, it can be retrieved from the cache instead of hitting the database again.
+
+2. **Batching Updates**: Batching is the process of grouping related operations together so that they can be executed in a single operation. This can significantly reduce the overhead of performing many small operations. For example, instead of sending a network request every time a user types a character in a form, you might batch these updates together and send a single network request when the user finishes typing.
+
+3. **Moving Processing to the Client Side**: This strategy involves performing some of the processing on the client side (i.e., in the user's browser) instead of on the server. This can reduce server load and network latency, leading to a faster and more responsive application. However, it's important to be mindful of the user's device capabilities and network conditions, as too much client-side processing can lead to a slow or unresponsive application on less powerful devices or slow networks. 
+
+For example, instead of having the server render HTML and send it to the client, you might use a JavaScript framework like React to render HTML on the client side. Or, instead of performing all data validation on the server, you might perform some basic validation on the client side to provide immediate feedback to the user.

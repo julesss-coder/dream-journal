@@ -14,7 +14,8 @@ function DreamEditor({
   handleDeleteDream,
   dreams,
   tagData,
-  handleFormInput
+  handleFormInput,
+  handleTagInput
 }) {
   let timer;
   
@@ -98,7 +99,7 @@ function DreamEditor({
                 gap: "15px"
               }}
               // IDEA for later: The `onChange` event DOES bubble, so instead of debouncing `onFormInput` by just 100ms in the onChange handler, I could register changes in the form in this onChange handler for all form fields, and debounce it by 1000ms, and call it also when user leaves page (within useEffect cleanup function). 
-              onChange={(e) => console.log("onChange handler in form Box runs", e.bubbles, e.target.id, e.target.value)}
+              // onChange={(e) => console.log("onChange handler in form Box runs", e.bubbles, e.target.id, e.target.value)}
             >
               <TextField
                 id="dream-title"
@@ -111,7 +112,7 @@ function DreamEditor({
                   clearTimeout(timer);
                   timer = setTimeout(() => {
                     // Passing in e.target.value instead of `e`, as `e` is nullified after `handleFormInput` is invoked. `setTimeout` then runs with nullified event object, so that `e.target.value` does not contain user input.
-                    handleFormInput(dream.id, "title", e.target.value);
+                    handleFormInput(dream.dream_id, "title", e.target.value);
                   }, 100);
                 }}
               />
@@ -135,7 +136,7 @@ function DreamEditor({
                   clearTimeout(timer);
                   timer = setTimeout(() => {
                     // Passing in e.target.value instead of `e`, as `e` is nullified after `handleFormInput` is invoked. `setTimeout` then runs with nullified event object, so that `e.target.value` does not contain user input.
-                    handleFormInput(dream.id, "description", e.target.value);
+                    handleFormInput(dream.dream_id, "description", e.target.value);
                   }, 100);
                 }}
                 multiline
@@ -149,7 +150,7 @@ function DreamEditor({
                   clearTimeout(timer);
                   timer = setTimeout(() => {
                     // Passing in e.target.value instead of `e`, as `e` is nullified after `handleFormInput` is invoked. `setTimeout` then runs with nullified event object, so that `e.target.value` does not contain user input.
-                    handleFormInput(dream.id, "thoughts", e.target.value);
+                    handleFormInput(dream.dream_id, "thoughts", e.target.value);
                   }, 100);
                 }}
                 multiline
@@ -161,11 +162,12 @@ function DreamEditor({
                 label="Dream tags"
                 defaultValue={getCurrentTags().join(", ")}
                 helperText="Use this format: tag, tagConsistingOfSeveralWords. Separate tags with comma."
-                onChange={(e) => {
+                onKeyUp={(e) => {
+                  // Can I use the same timer as for the calls to `handleFormInput()`? I assume so, as the user can't trigger tag input and input in the other fields at the same time. 
                   clearTimeout(timer);
                   timer = setTimeout(() => {
-                    handleFormInput(dream.id, "tags", e.target.value);
-                  }, 100);
+                    handleTagInput(dream.dream_id, e.target.value);
+                  }, 300);
                 }}
                 fullWidth
                 multiline

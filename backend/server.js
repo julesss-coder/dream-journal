@@ -142,7 +142,7 @@ app.post("/", (request, response) => {
     })
     .then(() => {
       console.log("Successfully added new dream to database 'dream_log'.");
-      response.status(200).json({message: "Received POST request"});
+      response.status(200).json({message: "Received POST request to add a dream."});
     })
     .catch((error) => console.error(error));
 });
@@ -157,35 +157,52 @@ In `dream_tags`:
 app.delete("/", (request, response) => {
   const {dreamId} = request.body;
 
-  let sql = 'DELETE FROM `dream_log` WHERE `id` = ?';
+  let sql = 'DELETE FROM `dream_log` WHERE `dream_id` = ?';
   sql = mySQL.format(sql, dreamId);
   return query(sql)
   .then(() => {
-    console.log(`Successfully deleted dream with dreamid ${dreamId}.`);
+    console.log(`Successfully deleted dream with dream_id ${dreamId}.`);
     sql = 'DELETE FROM `dream_tags` WHERE `dream_id` = ?';
     sql = mySQL.format(sql, dreamId);
     return query(sql)
   })
   .then(() => {
     console.log(`Successfully deleted entry in 'dream_tags' with dream_id ${dreamId}.`);
-    response.status(200).json({message: `Successfully deleted dream with dreamid ${dreamId} and it tags.`});
+    response.status(200).json({message: `Successfully deleted dream with dream_id ${dreamId} and its tags.`});
   })
   .catch(error => console.error(error));
 });
 
-app.put("/", (request, response) => {
+// Update a dream (excluding the dream tags)
+app.put("/updateDreamLog", (request, response) => {
   const {dreamId, prop, value} = request.body;
   console.log(dreamId, prop, value);
 
   // update dream_log set prop = value, lastEdited = now() where id = dreamId
-  let sql = 'UPDATE `dream_log` SET ?? = ?, lastEdited = NOW() WHERE id = ?';
+  let sql = 'UPDATE `dream_log` SET ?? = ?, last_edited = NOW() WHERE dream_id = ?';
   sql = mySQL.format(sql, [prop, value, dreamId]);
   return query(sql)
   .then(() => {
-    console.log(`Successfully updated dream with dreamId ${dreamId}.`);
-    response.send(`Successfully updated dream with dreamId ${dreamId}.`);
+    console.log(`Successfully updated dream with dream_id ${dreamId}.`);
+    response.status(200).json({message: `Successfully updated dream with dream_id ${dreamId}.`});
   })
   .catch(error => console.log(error));
+});
+
+// Update a dream's tags
+app.put("/updateDreamTags", (request, response) => {
+  const {tagsToUpdate} = request.body;
+  console.log("tagsToUpdate: ", tagsToUpdate);
+
+  /*
+  For each entry in tagsToUpdate:
+    If entry.tag_id !== null: 
+      replace tag_text of entry in `dream_tags` with this tag_id with new value
+    Else:
+      Create a new entry in `dream_tags` with dream_id and tag_text
+  */
+
+  response.status(200).json({message: "PUT request to endpoint /updateDreamTags received."});
 });
 
 
