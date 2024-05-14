@@ -22,6 +22,9 @@ const connection = mySQL.createConnection({
 });
 
 const query = util.promisify(connection.query).bind(connection);
+const beginTransaction = util.promisify(connection.beginTransaction).bind(connection);
+const commit = util.promisify(connection.commit).bind(connection);
+const rollback = util.promisify(connection.rollback).bind(connection);
 
 connection.connect((error) => {
   if (error) {
@@ -196,11 +199,56 @@ app.put("/updateDreamTags", (request, response) => {
 
   /*
   For each entry in tagsToUpdate:
-    If entry.tag_id !== null: 
+    // If the entry is not new
+    If entry.tag_id !== null 
       replace tag_text of entry in `dream_tags` with this tag_id with new value
     Else:
       Create a new entry in `dream_tags` with dream_id and tag_text
   */
+
+  beginTransaction()
+  .then(() => {
+    console.log("Transaction begun");
+
+    // TODO Does not work - rewrite.
+
+  //   // Get all tag_texts in tagsToUpdate
+  //   let tagTexts = tagsToUpdate.map(entry => entry.tag_text);
+
+  //   // Delete entries from dream_tags
+  //   let sql = `DELETE FROM dream_tags WHERE dream_id = ? AND tag_text NOT IN (?)`;
+  //   return query(sql, [tagsToUpdate[0].dream_id, tagTexts]);
+  // })
+  // .then(() => {
+  //   // Entries deleted
+
+  //   let promises = tagsToUpdate.map(entry => {
+  //     if (entry.tag_id !== null) {
+  //       // Update existing entry
+  //       let sql = `UPDATE dream_tags SET tag_text = ? WHERE dream_id = ? AND tag_id = ?`;
+  //       return query(sql, [entry.tag_text, entry.dream_id, entry.tag_id]);
+  //     } else {
+  //       // Insert new entry
+  //       let sql = `INSERT INTO dream_tags (dream_id, tag_text) VALUES (?, ?)`;
+  //       return query(sql, [entry.dream_id, entry.tag_text]);
+  //     }
+  //   });
+
+  //   return Promise.all(promises);
+  // })
+  // .then(() => {
+  //   return commit();
+  // })
+  // .then(() => {
+  //   console.log('Transaction Complete.');
+  // })
+  // .catch(err => {
+  //   return rollback()
+  //     .then(() => { throw err; }); // re-throw the error after rollback
+  // });
+
+
+
 
   response.status(200).json({message: "PUT request to endpoint /updateDreamTags received."});
 });

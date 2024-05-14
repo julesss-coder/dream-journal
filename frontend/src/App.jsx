@@ -118,7 +118,7 @@ function App() {
     // The filter operation needs to be done only the first time the tags are changed. After that, it is updated with the new tags and thus only contains entries for the current dreamId.
     let tagsToUpdate = tagData.filter(entry => entry.dream_id === dreamId);
     console.log("tagsToUpdate: ", tagsToUpdate);
-    // filter out additional commas
+    // TODO filter out additional commas
     let updatedTags = value.split(", ").map(tag => tag.trim()).filter(tag => tag !== "");
     // Remove duplicate entries from `updatedTags`
     updatedTags = [...new Set(updatedTags)];
@@ -143,10 +143,11 @@ function App() {
       for (let i = 0; i < updatedTags.length; i++) {
         tagsToUpdate[i].tag_text = updatedTags[i];
       }
-    }
 
-    // Delete the rest of the previous tags
-    tagsToUpdate = tagsToUpdate.slice(0, updatedTags.length);
+      // Delete the rest of the previous tags
+      tagsToUpdate = tagsToUpdate.slice(0, updatedTags.length);
+    }
+    
     console.log("updated tagsToUpdate: ", tagsToUpdate);
 
     fetch('http://localhost:8000/updateDreamTags', {
