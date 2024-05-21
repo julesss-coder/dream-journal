@@ -13,7 +13,7 @@ function Sider({
   open,
   setOpen,
   dreams,
-  handleDreamClick 
+  handleDreamClick
 }) {
   const [searchTerm, setSearchTerm] = useState("");
 

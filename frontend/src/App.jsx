@@ -17,6 +17,8 @@ function App() {
   const [selectedDreamId, setSelectedDreamId] = useState(null);
   const [dreamsUpdated, setDreamsUpdated] = useState(true);
   const [tagData, setTagData] = useState(null);
+  const [isError, setIsError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
     const fetchDreams = async () => {
@@ -31,8 +33,11 @@ function App() {
         console.log("data from backend: ", data);
         setTagData(Object.values(data.tags));
         setDreams(Object.values(data.dreams));
+        setIsError(false);
       } catch (error) {
         console.error('A problem occurred when fetching the data: ', error);
+        setIsError(true);
+        setErrorMessage("A problem occurred when trying to get your dreams from the database. Please refresh the page to try again.");
       }
     };
 
@@ -90,7 +95,7 @@ function App() {
     .then(data => console.log(data.message))
     .catch(error => console.error(error));
 
-    setDreams(prevDreams => [...prevDreams, newDream]);
+    // setDreams(prevDreams => [...prevDreams, newDream]);
     setDreamsUpdated(true);
     setSelectedDreamId(newDreamId);
   };
@@ -109,19 +114,19 @@ function App() {
     .then(data => console.log(data.message))
     .catch(error => console.error(error));
 
-    setDreams(prevDreams => {
-      return prevDreams.map(dream => {
-        if (dream.dream_id === dreamId) {
-          return {
-            ...dream,
-            [prop]: value,
-            lastEdited: new Date(Date.now()).toUTCString()
-          };
-        } else {
-          return dream;
-        }
-      });
-    });
+    // setDreams(prevDreams => {
+    //   return prevDreams.map(dream => {
+    //     if (dream.dream_id === dreamId) {
+    //       return {
+    //         ...dream,
+    //         [prop]: value,
+    //         lastEdited: new Date(Date.now()).toUTCString()
+    //       };
+    //     } else {
+    //       return dream;
+    //     }
+    //   });
+    // });
     setDreamsUpdated(true);
   };
 
@@ -192,11 +197,11 @@ function App() {
 
     // Update dreams
     // Setting `dreams` in the local state triggers effect that fetches dreams from database, so it is not necessary. => How to solve this?
-    setDreams(prevDreams => {
-      return prevDreams.filter(dream => {
-        return selectedDreamId !== dream.dream_id;
-      });
-    });
+    // setDreams(prevDreams => {
+    //   return prevDreams.filter(dream => {
+    //     return selectedDreamId !== dream.dream_id;
+    //   });
+    // });
 
     // Update tags
     setSelectedDreamId(null);
@@ -234,7 +239,7 @@ function App() {
         setOpen={setOpen}
         dreams={dreams}
         handleDreamClick={handleDreamClick}
-      />
+        />
       {/* Dream editor */}
       <DreamEditor 
         selectedDreamId={selectedDreamId}
@@ -243,6 +248,8 @@ function App() {
         tagData={tagData}
         handleFormInput={handleFormInput}
         handleTagInput={handleTagInput}
+        isError={isError}
+        errorMessage={errorMessage}
       />
 
       {/* Bottom Nav */}

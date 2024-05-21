@@ -7,7 +7,7 @@
 - [ ] Create table `users`.
 - [x] Add dummy data to tables `dream_log` and `dream_tags`.
 - [?] Update serverside code for all routes after changing database design.
-- [ ] Update clientside code for all crud operations after changing database design.
+- [x] Update clientside code for all crud operations after changing database design.
     - [x] Read dream
         - [x] Format create date to weekday, date
     - [x] Add dream
@@ -16,10 +16,12 @@
     - [x] Update dream
         - [x] Reduce number of HTTP requests - send update to backend once user stops typing
         - [x] Implement server route for updating dream_tags table.
+- [ ] Add user-friendly error message in component when database query fails
     
 - [ ] Use transactions when updating dream tags? Or in general?
 - [ ] Comment out unnecessary calls to setState()
 - [ ] Async in frontend (and backend): Decide between using then() and async/await. Read up on both.
+- [ ] Should I keep setting `dreams` in local state in case the database request goes wrong? Or if it does, would it not be better to let the user know instead of keeping working with data from local state?
 
 ## Requirements for tags in dream view
 - [ ] Tags can be added by writing comma-separated text. If a tag consists of more than one word, write it in camelCase. Otherwise, the single words will be saved as indivual tags. 

@@ -15,7 +15,9 @@ function DreamEditor({
   dreams,
   tagData,
   handleFormInput,
-  handleTagInput
+  handleTagInput,
+  isError,
+  errorMessage
 }) {
   let timer;
   
@@ -49,8 +51,12 @@ function DreamEditor({
       }}
     >
       {/* Dream container */}
+      { isError === true && (
+        <p>{errorMessage}</p>
+      )}
+
       {
-        selectedDreamId === null && <Typography>No dream selected.</Typography>
+        selectedDreamId === null && isError === false && <Typography>No dream selected.</Typography>
       }
 
       {/* "Delete dream" menu */}
@@ -87,7 +93,7 @@ function DreamEditor({
 
       {/* Dream editor */}
       {
-        selectedDreamId && (
+        selectedDreamId !== null && (
           dreams.filter(dream => (
             dream.dream_id === selectedDreamId
           )).map(dream => (
