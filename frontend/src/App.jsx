@@ -210,6 +210,7 @@ function App() {
 
   console.log("dreams: ", dreams);
   console.log("selectedDreamId: ", selectedDreamId);
+  console.log("isError: ", isError);
 
   return (
     <Box

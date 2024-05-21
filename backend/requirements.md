@@ -16,7 +16,7 @@
     - [x] Update dream
         - [x] Reduce number of HTTP requests - send update to backend once user stops typing
         - [x] Implement server route for updating dream_tags table.
-- [ ] Add user-friendly error message in component when database query fails
+- [x] Add user-friendly error message in component when database query fails
     
 - [ ] Use transactions when updating dream tags? Or in general?
 - [ ] Comment out unnecessary calls to setState()
