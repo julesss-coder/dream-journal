@@ -6,17 +6,16 @@
 - [x] Create table `dream_tags`.
 - [ ] Create table `users`.
 - [x] Add dummy data to tables `dream_log` and `dream_tags`.
-
 - [?] Update serverside code for all routes after changing database design.
 - [ ] Update clientside code for all crud operations after changing database design.
     - [x] Read dream
         - [x] Format create date to weekday, date
     - [x] Add dream
     - [x] Delete dream
-        - [ ] On deleting a dream, also delete all entries in dream_tags with this dream_id
-    - [ ] Update dream
+        - [x] On deleting a dream, also delete all entries in dream_tags with this dream_id
+    - [x] Update dream
         - [x] Reduce number of HTTP requests - send update to backend once user stops typing
-        - [*] Implement server route for updating dream_tags table.
+        - [x] Implement server route for updating dream_tags table.
     
 - [ ] Use transactions when updating dream tags? Or in general?
 - [ ] Comment out unnecessary calls to setState()

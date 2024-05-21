@@ -95,27 +95,39 @@ function App() {
     setSelectedDreamId(newDreamId);
   };
 
-  /*
-  To reduce the number of HTTP requests, create the new tag data in the front end, so it only needs to be inserted in the backend (all entries for current dreamId deleted, new ones inserted?)
+  // Handles input in dream editor form, except for tag input (see `handleTagInput()`)
+  const handleFormInput = (dreamId, prop, value) => {
+    console.log("handleFormInput() runs");
+    fetch('http://localhost:8000/updateDreamLog', {
+      method: 'PUT', 
+      headers: {
+        'Content-type': 'application/json',
+      },
+      body: JSON.stringify({dreamId, prop, value})
+    })
+    .then(response => response.json())
+    .then(data => console.log(data.message))
+    .catch(error => console.error(error));
 
-  Debounce the user input on tags field: only run `handleUserInput` 300ms after keyup event. If user types again before that, timer is reset. 
+    setDreams(prevDreams => {
+      return prevDreams.map(dream => {
+        if (dream.dream_id === dreamId) {
+          return {
+            ...dream,
+            [prop]: value,
+            lastEdited: new Date(Date.now()).toUTCString()
+          };
+        } else {
+          return dream;
+        }
+      });
+    });
+    setDreamsUpdated(true);
+  };
 
-  Handle input and tag input separately
-
-  To change tags in backend, pass in current tag data and new tag data so we can compare it in backend
-  Get current tags for current dream:
-    [money, winning, lottery]
-
-  Changed tags are a string:
-    Turn into array `new Tags`:
-    For each element of newTags:
-      If an element was changed
-
-  */
-
-      // TODO DEBOUNCE!!! It runs on every change!!
   const handleTagInput = (dreamId, value) => {
     console.log("handleTagInput() runs, dreamId, value: ", dreamId, value);
+
     // The filter operation needs to be done only the first time the tags are changed. After that, it is updated with the new tags and thus only contains entries for the current dreamId.
     let tagsToUpdate = tagData.filter(entry => entry.dream_id === dreamId);
     console.log("tagsToUpdate: ", tagsToUpdate);
@@ -159,105 +171,11 @@ function App() {
       body: JSON.stringify({tagsToUpdate}),
     })
     .then(response => response.json())
-    .then(data => console.log(data.message))
-    .catch(error => console.error(error));
-
-    // TODO Before setting the local state, I need to actually update the tags in the backend.
-    // setDreamsUpdated(true);
-  };
-
-  // Handles input in dream editor form, except for tag input (see `handleTagInput()`)
-  const handleFormInput = (dreamId, prop, value) => {
-    console.log("handleFormInput() runs");
-    if (prop === "tags") {
-      // console.log("tags: ", value);
-      // setDreams(prevDreams => {
-      //   return prevDreams.map(dream => {
-      //     if (dream.dream_id === dreamId) {
-      //       return {
-      //         ...dream,
-      //         [prop]: value.split(", ").map(tag => tag.trim()).filter(tag => tag !== ""),
-      //         last_edited: new Date(Date.now()).toUTCString()
-      //       };
-      //     } else {
-      //       return dream;
-      //     }
-      //   });
-      // });
-
-      /*
-      Change data model to deal with tags: in current model, if changing the tag text for a tag used in one dream, it is also changed in the other dreams, but that should not be the case.
-
-      ----------
-      CoPilot: 
-
-      You're correct. If tags are shared between dreams and can be edited independently by each dream, then updating the tag directly would affect all dreams that use that tag, which could lead to incorrect data.
-
-      In this case, you might want to consider a different data model. Instead of having a many-to-many relationship between dreams and tags, you could have a one-to-many relationship between dreams and tags, and a many-to-one relationship between tags and dreams.
-
-      This means that each dream has its own set of tags, and each tag can be associated with multiple dreams. When a tag is edited in one dream, a new tag is created and associated with that dream, but the original tag remains unchanged for the other dreams.
-
-      Here's how you can implement this:
-
-      1. When a tag is added to a dream, add a new entry to the `tags` table with the tag text and dream id, and get the id of the new tag.
-
-      2. When a tag is edited in a dream, add a new entry to the `tags` table with the updated tag text and dream id
-      -------------
-
-      STRATEGY 1  **
-      add tag to tags table
-      each time tags are changed, update the whole entry in tags table? ie delete content and start table again? 
-      lottery (id 1), money (id 2)
-      if lottery is changed:
-        update content of tag with id 1
-        no need to update dreamTags
-
-      else if lottery is deleted:
-        update dreamTags
-        if tagId is not in dreamTags anymore:
-          delete this tag from tags table
-
-      STRATEGY 2
-      Store tags as one string
-      SPlit by "," only when displaying them in the frontend - then no tables `tags` and `dreamTags` necessary
-      BUT necessary for creating tag cloud:
-        When showing tag cloud:
-          // Delete content of tags and dreamTags table?
-          For each dream in `dreamLog`:
-            For each tag in dream:
-              Add it to table `tags` with tag_id and text
-              Add dreamId and tagId to table `dreamTags`
-
-      */
-
-    } else {
-      fetch('http://localhost:8000/updateDreamLog', {
-        method: 'PUT', 
-        headers: {
-          'Content-type': 'application/json',
-        },
-        body: JSON.stringify({dreamId, prop, value})
-      })
-      .then(response => response.json())
-      .then(data => console.log(data.message))
-      .catch(error => console.error(error));
-
-
-      setDreams(prevDreams => {
-        return prevDreams.map(dream => {
-          if (dream.dream_id === dreamId) {
-            return {
-              ...dream,
-              [prop]: value,
-              lastEdited: new Date(Date.now()).toUTCString()
-            };
-          } else {
-            return dream;
-          }
-        });
-      });
+    .then(data => {
+      console.log(data.message);
       setDreamsUpdated(true);
-    }
+    })
+    .catch(error => console.error(error));
   };
 
   const handleDeleteDream = () => {

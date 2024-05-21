@@ -55,6 +55,12 @@ connection.connect((error) => {
     )`);
   })
   .then(() => {
+    /*
+    For each dream_id, all tags are added to dream_tags. 
+    => Tags can be duplicate across dreams (not in same dream).
+    Reason: When updating a tag for dream X, I do not want to update it for the other dreams. 
+    If I used an junction table that catalogues which tag is associated to which dream, and a table that lists tag_ids and their tags, then updating a tag in one dream would update it in the other dreams where it occurs, as well. 
+    */
     console.log("Table `dream_log` created, or already exists.");
     return query(`CREATE TABLE IF NOT EXISTS dream_tags (
       dream_id INT,
@@ -103,6 +109,7 @@ connection.connect((error) => {
 // Routes
 // get data from dream_log and dream_tags and send to frontend in one object
 app.get('/', (request, response) => {
+  console.log("GET request received");
   let dreamData = {};
 
   // Do I need to use prepared statements in all cases, or only where values are inserted?
@@ -224,7 +231,7 @@ app.put("/updateDreamTags", (request, response) => {
         promiseChain = promiseChain.then(() => query(updateSql));
       // Add newly created tags that don't have a tag_id yet
       } else if (entry.tag_id === null) {
-        let addSql = 'INSERT IGNORE INTO dream_tags(dream_id, tag_text) VALUES(?, ?)';
+        let addSql = 'INSERT INTO dream_tags(dream_id, tag_text) VALUES(?, ?)';
         addSql = mySQL.format(addSql, [entry.dream_id, entry.tag_text]);
         promiseChain = promiseChain.then(() => query(addSql));
       }
@@ -234,38 +241,13 @@ app.put("/updateDreamTags", (request, response) => {
 
     promiseChain
       .then(() => {
-        console.log("All tag updates and deletes complete.");
+        console.log("All tag updates and deletions complete.");
+        response.status(200).json({message: "All tag updates and deletes complete."});
       })
       .catch(error => {
         console.error("An error occurred: ", error);
       });
   }
-
-
-
-
-  // `SELECT * FROM dream_tags WHERE dream_id = [dreamid of dream] and tag_id is not in tagIds
-
-  /*
-  tagIdsToUpdate = get all tagIds in tagsToUpdate (array of objects)
-
-
-  Delete all entries in dream_tags where dream_id is current's dream id AND where tag_id is not in tagIdsToUpdate
-
-  // Collect queries
-  For each entry in tagsToUpdate:
-    Select entry in dream_tags where dream_id and tag_id are like in entry
-    replace tag_text with new value
-
-  // Deal with new tags
-  For each entry in tagsToUpdate where tag_id is null:
-    Add it to dream_tags with current dream_id and tag_text
-  */
-
-  
-
-
-  response.status(200).json({message: "PUT request to endpoint /updateDreamTags received."});
 });
 
 
