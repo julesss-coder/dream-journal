@@ -113,6 +113,7 @@ function App() {
 
   */
 
+      // TODO DEBOUNCE!!! It runs on every change!!
   const handleTagInput = (dreamId, value) => {
     console.log("handleTagInput() runs, dreamId, value: ", dreamId, value);
     // The filter operation needs to be done only the first time the tags are changed. After that, it is updated with the new tags and thus only contains entries for the current dreamId.

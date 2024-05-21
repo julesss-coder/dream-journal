@@ -193,61 +193,76 @@ app.put("/updateDreamLog", (request, response) => {
 });
 
 // Update a dream's tags
+// TODO Decide if I want to use database transactions to make sure that ALL updates are performed
 app.put("/updateDreamTags", (request, response) => {
   const {tagsToUpdate} = request.body;
   console.log("tagsToUpdate: ", tagsToUpdate);
 
+  const tagIDs = [];
+  for (const entry of tagsToUpdate) {
+    if (entry.tag_id !== null) {
+      tagIDs.push(entry.tag_id);
+    }
+  }
+  console.log("tagIDs: ", tagIDs);
+  
+  let promiseChain = Promise.resolve();
+
+  if (tagsToUpdate.length > 0) {
+    if (tagIDs.length > 0) {
+      // Delete no longer needed tags
+      let deleteSql = 'DELETE FROM dream_tags WHERE dream_id = ? AND tag_id NOT IN (?)';
+      deleteSql = mySQL.format(deleteSql, [tagsToUpdate[0].dream_id, tagIDs]);
+      promiseChain = promiseChain.then(() => query(deleteSql));
+    }
+
+    // Update the tags that have a tag_id
+    for (const entry of tagsToUpdate) {
+      if (entry.tag_id !== null) {
+        let updateSql = 'UPDATE dream_tags SET tag_text = ? WHERE dream_id = ? AND tag_id = ?';
+        updateSql = mySQL.format(updateSql, [entry.tag_text, entry.dream_id, entry.tag_id]);
+        promiseChain = promiseChain.then(() => query(updateSql));
+      // Add newly created tags that don't have a tag_id yet
+      } else if (entry.tag_id === null) {
+        let addSql = 'INSERT IGNORE INTO dream_tags(dream_id, tag_text) VALUES(?, ?)';
+        addSql = mySQL.format(addSql, [entry.dream_id, entry.tag_text]);
+        promiseChain = promiseChain.then(() => query(addSql));
+      }
+    }
+
+    console.log("promiseChain: ", promiseChain);
+
+    promiseChain
+      .then(() => {
+        console.log("All tag updates and deletes complete.");
+      })
+      .catch(error => {
+        console.error("An error occurred: ", error);
+      });
+  }
+
+
+
+
+  // `SELECT * FROM dream_tags WHERE dream_id = [dreamid of dream] and tag_id is not in tagIds
+
   /*
+  tagIdsToUpdate = get all tagIds in tagsToUpdate (array of objects)
+
+
+  Delete all entries in dream_tags where dream_id is current's dream id AND where tag_id is not in tagIdsToUpdate
+
+  // Collect queries
   For each entry in tagsToUpdate:
-    // If the entry is not new
-    If entry.tag_id !== null 
-      replace tag_text of entry in `dream_tags` with this tag_id with new value
-    Else:
-      Create a new entry in `dream_tags` with dream_id and tag_text
+    Select entry in dream_tags where dream_id and tag_id are like in entry
+    replace tag_text with new value
+
+  // Deal with new tags
+  For each entry in tagsToUpdate where tag_id is null:
+    Add it to dream_tags with current dream_id and tag_text
   */
 
-  beginTransaction()
-  .then(() => {
-    console.log("Transaction begun");
-
-    // TODO Does not work - rewrite.
-
-  //   // Get all tag_texts in tagsToUpdate
-  //   let tagTexts = tagsToUpdate.map(entry => entry.tag_text);
-
-  //   // Delete entries from dream_tags
-  //   let sql = `DELETE FROM dream_tags WHERE dream_id = ? AND tag_text NOT IN (?)`;
-  //   return query(sql, [tagsToUpdate[0].dream_id, tagTexts]);
-  // })
-  // .then(() => {
-  //   // Entries deleted
-
-  //   let promises = tagsToUpdate.map(entry => {
-  //     if (entry.tag_id !== null) {
-  //       // Update existing entry
-  //       let sql = `UPDATE dream_tags SET tag_text = ? WHERE dream_id = ? AND tag_id = ?`;
-  //       return query(sql, [entry.tag_text, entry.dream_id, entry.tag_id]);
-  //     } else {
-  //       // Insert new entry
-  //       let sql = `INSERT INTO dream_tags (dream_id, tag_text) VALUES (?, ?)`;
-  //       return query(sql, [entry.dream_id, entry.tag_text]);
-  //     }
-  //   });
-
-  //   return Promise.all(promises);
-  // })
-  // .then(() => {
-  //   return commit();
-  // })
-  // .then(() => {
-  //   console.log('Transaction Complete.');
-  // })
-  // .catch(err => {
-  //   return rollback()
-  //     .then(() => { throw err; }); // re-throw the error after rollback
-  // });
-
-
+  
 
 
   response.status(200).json({message: "PUT request to endpoint /updateDreamTags received."});

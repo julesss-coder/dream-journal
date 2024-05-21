@@ -13,6 +13,7 @@
         - [x] Format create date to weekday, date
     - [x] Add dream
     - [x] Delete dream
+        - [ ] On deleting a dream, also delete all entries in dream_tags with this dream_id
     - [ ] Update dream
         - [x] Reduce number of HTTP requests - send update to backend once user stops typing
         - [*] Implement server route for updating dream_tags table.
