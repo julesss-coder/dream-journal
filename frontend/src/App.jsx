@@ -21,6 +21,7 @@ function App() {
   const [isError, setIsError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [isCloudView, setIsCloudView] = useState(false);
+  const [tagCloudData, setTagCloudData] = useState([]);
 
   useEffect(() => {
     const fetchDreams = async () => {
@@ -215,6 +216,16 @@ function App() {
   const handleCloudViewClick = () => {
     console.log("handleCloudViewClick() runs");
     setIsCloudView(true);
+
+    fetch('http://localhost:8000/tagCloudView', {
+      method: 'GET'
+    })
+    .then(response =>  response.json())
+    .then(tagCountData => {
+      console.log("tag cloud data from backend: ", tagCountData);
+      setTagCloudData(tagCountData);
+  })
+    .catch(error => console.error(error));
   };
 
   console.log("dreams: ", dreams);
@@ -252,7 +263,11 @@ function App() {
       />
       
       {/* Tag Cloud */}
-      { isCloudView === true && <DreamTagCloud />}
+      { isCloudView === true && (
+        <DreamTagCloud 
+          tagCloudData={tagCloudData}
+        />
+      )}
 
       {/* Dream Editor */}
       { isCloudView === false && (

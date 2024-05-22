@@ -9,10 +9,13 @@ const cors = require("cors")
 const insertDummyDreams = require('./insertDummyDreams');
 const mySQL = require('mysql');
 const express = require('express');
+const morgan = require('morgan');
 const app = express();
 const port = 8000;
+
 app.use(express.json());
 app.use(cors());
+app.use(morgan('dev'));
 const util = require('util');
 
 const connection = mySQL.createConnection({
@@ -248,6 +251,24 @@ app.put("/updateDreamTags", (request, response) => {
         console.error("An error occurred: ", error);
       });
   }
+});
+
+// Tag cloud view
+app.get("/tagCloudView", (request, response) => {
+  let sql = `SELECT tag_text AS value, COUNT(tag_text) AS count
+  FROM dream_tags
+  GROUP BY value`;
+  return query(sql)
+  .then(data => {
+    console.log("data: ", data);
+    response.status(200).json(data);
+  })
+  .catch(error => {
+    console.error(error);
+    response.status(500).json({message: "There was a problem fetching your dream tags. Please try again."})
+  });
+
+
 });
 
 

@@ -23,6 +23,9 @@
 - [ ] Async in frontend (and backend): Decide between using then() and async/await. Read up on both.
 - [ ] Should I keep setting `dreams` in local state in case the database request goes wrong? Or if it does, would it not be better to let the user know instead of keeping working with data from local state?
 
+## General todos
+- [ ] Add complete error handling - send response to frontend
+
 ## Requirements for tags in dream view
 - [ ] Tags can be added by writing comma-separated text. If a tag consists of more than one word, write it in camelCase. Otherwise, the single words will be saved as indivual tags. 
 - [ ] Saved tags are displayed as comma-separated words.
