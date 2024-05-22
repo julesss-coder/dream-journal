@@ -1,0 +1,10 @@
+/* Tag cloud */
+/* These classnames are added by default by the react-tagcloud library */
+.tag-cloud {
+  margin: 20px;
+}
+
+.tag-cloud-tag {
+  text-decoration: underline;
+  cursor: pointer;
+}

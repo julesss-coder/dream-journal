@@ -1,22 +1,21 @@
 import { TagCloud } from 'react-tagcloud';
 
-// const data = [
-//   { value: 'JavaScript', count: 38 },
-//   { value: 'React', count: 30 },
-//   { value: 'Nodejs', count: 28 },
-//   { value: 'Express.js', count: 25 },
-//   { value: 'HTML5', count: 33 },
-//   { value: 'MongoDB', count: 18 },
-//   { value: 'CSS3', count: 20 },
-// ]
-
-function DreamTagCloud({ tagCloudData }) {
+function DreamTagCloud({ tagCloudData, handleTagClick }) {
   return (
     <TagCloud 
-      minSize={12}
-      maxSize={35}
+      minSize={16}
+      maxSize={40}
       tags={tagCloudData}
-      onClick={tag => alert(`'${tag.value}' was selected!`)}
+      onClick={(tag) => handleTagClick(tag)}
+      shuffle={true}
+      randomSeed={Math.random()}
+      // custom random color options
+      // see randomColor package: https://github.com/davidmerfield/randomColor
+      colorOptions={{
+        luminosity: 'dark',
+        hue: 'blue',
+      }}
+
     />
   )
 }

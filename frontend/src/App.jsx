@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import './App.css';
+
 // Library component imports
 import Box from '@mui/joy/Box';
 import BottomNavigation from '@mui/material/BottomNavigation';
@@ -7,6 +9,7 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import BubbleChartIcon from '@mui/icons-material/BubbleChart';
 import IconButton from '@mui/joy/IconButton';
 import Menu from '@mui/icons-material/Menu';
+
 // Custom component imports
 import DreamEditor from './components/DreamEditor.jsx';
 import Sider from './components/Sider.jsx';
@@ -224,7 +227,22 @@ function App() {
     .then(tagCountData => {
       console.log("tag cloud data from backend: ", tagCountData);
       setTagCloudData(tagCountData);
-  })
+    })
+    .catch(error => console.error(error));
+  };
+
+  const handleTagClick = (tag) => {
+    console.log("handleTagClick, tag: ", tag);
+    fetch(`http://localhost:8000/getDreamsWithTag?tagValue=${encodeURIComponent(tag.value)}`, {
+      method: 'GET',
+      headers: {
+        'Content-type': 'application/json',
+      }
+    })
+    .then(response =>  response.json())
+    .then(dreamsWithTag => {
+      console.log("dreams with tag from backend: ", dreamsWithTag);
+    })
     .catch(error => console.error(error));
   };
 
@@ -266,6 +284,7 @@ function App() {
       { isCloudView === true && (
         <DreamTagCloud 
           tagCloudData={tagCloudData}
+          handleTagClick={handleTagClick}
         />
       )}
 

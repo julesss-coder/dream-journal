@@ -260,17 +260,37 @@ app.get("/tagCloudView", (request, response) => {
   GROUP BY value`;
   return query(sql)
   .then(data => {
-    console.log("data: ", data);
     response.status(200).json(data);
   })
   .catch(error => {
     console.error(error);
     response.status(500).json({message: "There was a problem fetching your dream tags. Please try again."})
   });
-
-
 });
 
+app.get("/getDreamsWithTag", (request, response) => {
+  let tag = request.query.tagValue;
+  let sql = 'SELECT dream_id FROM dream_tags WHERE tag_text = ?';
+  sql = mySQL.format(sql, [tag]);
+  return query(sql)
+  .then(dreamIds => {
+    let ids = dreamIds.map(id => id.dream_id);
+    console.log("ids: ", ids);
+    sql = 'SELECT * FROM dream_log WHERE dream_id in (?, ?)';
+    sql = mySQL.format(sql, [...ids]);
+    return query(sql)
+    .then(dreamsWithTag => {
+      let dreamData = {dreams: dreamsWithTag};
+      console.log("dreamsWithTag: ", dreamsWithTag);
+
+      // TODO: get tags for these dreams, too, and send it all back in one object. then render selected dreams in sider.
+
+      
+      response.status(200).json(dreamsWithTag);
+    })
+    .catch(error => console.error(error));
+  })
+});
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
