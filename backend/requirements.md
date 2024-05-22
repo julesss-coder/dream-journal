@@ -81,6 +81,7 @@ GROUP BY Tag;
 Select dreamId from dreamTags where tag = "money"
 
 # Requirements tag cloud
+- [ ] Clicking "cloud view" renders tag cloud in new view (sider still accessible)
 - [ ] The more dreams a tag is contained in, the bigger the tag text.
 - [ ] On clicking a tag, sidebar should list all dreams that contain this tag.
 

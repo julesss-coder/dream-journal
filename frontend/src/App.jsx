@@ -10,6 +10,7 @@ import Menu from '@mui/icons-material/Menu';
 // Custom component imports
 import DreamEditor from './components/DreamEditor.jsx';
 import Sider from './components/Sider.jsx';
+import DreamTagCloud from './components/DreamTagCloud.jsx';
 
 function App() {
   const [dreams, setDreams] = useState([]);
@@ -19,6 +20,7 @@ function App() {
   const [tagData, setTagData] = useState(null);
   const [isError, setIsError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [isCloudView, setIsCloudView] = useState(false);
 
   useEffect(() => {
     const fetchDreams = async () => {
@@ -67,6 +69,7 @@ function App() {
   const handleDreamClick = (dreamId) => {
     setSelectedDreamId(dreamId);
     setOpen(false);
+    setIsCloudView(false);
   };
   
   // TODO: Why does this return 0 as the `newDreamId` the first time it is called?
@@ -76,9 +79,9 @@ function App() {
     let newDream = {
       "dream_id": newDreamId,
       "user_id": 1, // TODO Change depending on user logged in
-      "title": "test",
-      "description": "",
-      "thoughts": "No thoughts just yet.",
+      "title": "Untitled",
+      "description": null,
+      "thoughts": null,
       // Will be set in backend
       "date_created": null,
       "last_edited": null,
@@ -98,6 +101,7 @@ function App() {
     // setDreams(prevDreams => [...prevDreams, newDream]);
     setDreamsUpdated(true);
     setSelectedDreamId(newDreamId);
+    setIsCloudView(false);
   };
 
   // Handles input in dream editor form, except for tag input (see `handleTagInput()`)
@@ -208,6 +212,11 @@ function App() {
     setDreamsUpdated(true);
   };
 
+  const handleCloudViewClick = () => {
+    console.log("handleCloudViewClick() runs");
+    setIsCloudView(true);
+  };
+
   console.log("dreams: ", dreams);
   console.log("selectedDreamId: ", selectedDreamId);
   console.log("isError: ", isError);
@@ -240,18 +249,24 @@ function App() {
         setOpen={setOpen}
         dreams={dreams}
         handleDreamClick={handleDreamClick}
-        />
-      {/* Dream editor */}
-      <DreamEditor 
-        selectedDreamId={selectedDreamId}
-        handleDeleteDream={handleDeleteDream}
-        dreams={dreams}
-        tagData={tagData}
-        handleFormInput={handleFormInput}
-        handleTagInput={handleTagInput}
-        isError={isError}
-        errorMessage={errorMessage}
       />
+      
+      {/* Tag Cloud */}
+      { isCloudView === true && <DreamTagCloud />}
+
+      {/* Dream Editor */}
+      { isCloudView === false && (
+        <DreamEditor 
+          selectedDreamId={selectedDreamId}
+          handleDeleteDream={handleDeleteDream}
+          dreams={dreams}
+          tagData={tagData}
+          handleFormInput={handleFormInput}
+          handleTagInput={handleTagInput}
+          isError={isError}
+          errorMessage={errorMessage}
+        />
+      )}
 
       {/* Bottom Nav */}
       <BottomNavigation
@@ -268,7 +283,11 @@ function App() {
           icon={<AddCircleOutlineIcon />}
           onClick={handleAddDream}
         />
-        <BottomNavigationAction label="Analyze" icon={<BubbleChartIcon />} />
+        <BottomNavigationAction 
+          label="Cloud View" 
+          icon={<BubbleChartIcon />} 
+          onClick={handleCloudViewClick}
+        />
       </BottomNavigation>
     </Box>
   );
