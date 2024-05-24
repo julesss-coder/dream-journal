@@ -65,11 +65,13 @@ connection.connect((error) => {
     If I used an junction table that catalogues which tag is associated to which dream, and a table that lists tag_ids and their tags, then updating a tag in one dream would update it in the other dreams where it occurs, as well. 
     */
     console.log("Table `dream_log` created, or already exists.");
+    // Creating an index for the tag_text column, as table `dream_tags` is often queried based on this column and this needs to be fast
     return query(`CREATE TABLE IF NOT EXISTS dream_tags (
       dream_id INT,
       tag_id INT AUTO_INCREMENT,
       tag_text VARCHAR(255),
-      PRIMARY KEY (tag_id)
+      PRIMARY KEY (tag_id),
+      INDEX idx_tag_text (tag_text)
     )`);
   })
   .then(() => {
@@ -274,22 +276,11 @@ app.get("/getDreamsWithTag", (request, response) => {
   sql = mySQL.format(sql, [tag]);
   return query(sql)
   .then(dreamIds => {
-    let ids = dreamIds.map(id => id.dream_id);
-    console.log("ids: ", ids);
-    sql = 'SELECT * FROM dream_log WHERE dream_id in (?, ?)';
-    sql = mySQL.format(sql, [...ids]);
-    return query(sql)
-    .then(dreamsWithTag => {
-      let dreamData = {dreams: dreamsWithTag};
-      console.log("dreamsWithTag: ", dreamsWithTag);
+    let dreamIdsFilteredByTagText = dreamIds.map(id => id.dream_id);
+    console.log("dreamIdsFilteredByTagText", dreamIdsFilteredByTagText);
 
-      // TODO: get tags for these dreams, too, and send it all back in one object. then render selected dreams in sider.
-
-      
-      response.status(200).json(dreamsWithTag);
     })
     .catch(error => console.error(error));
-  })
 });
 
 app.listen(port, () => {

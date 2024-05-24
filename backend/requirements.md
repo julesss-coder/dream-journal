@@ -30,6 +30,11 @@
 ## Requirements for tags in dream view
 - [ ] Tags can be added by writing comma-separated text. If a tag consists of more than one word, write it in camelCase. Otherwise, the single words will be saved as indivual tags. 
 - [ ] Saved tags are displayed as comma-separated words.
+
+FIX:
+When I update the tags of a dream and then immediately open the cloud view and click that newly added tag, the database reacts very slowly. How to fix this?
+
+
  ### Database design for tags in dream view
  - Tags can be saved as a string.
  - If required, make a table with a 1-n relationship between a dream and its tags. I.e. one extra table
