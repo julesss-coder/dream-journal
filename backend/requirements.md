@@ -154,3 +154,9 @@ Sure, here are descriptions of those strategies:
 3. **Moving Processing to the Client Side**: This strategy involves performing some of the processing on the client side (i.e., in the user's browser) instead of on the server. This can reduce server load and network latency, leading to a faster and more responsive application. However, it's important to be mindful of the user's device capabilities and network conditions, as too much client-side processing can lead to a slow or unresponsive application on less powerful devices or slow networks. 
 
 For example, instead of having the server render HTML and send it to the client, you might use a JavaScript framework like React to render HTML on the client side. Or, instead of performing all data validation on the server, you might perform some basic validation on the client side to provide immediate feedback to the user.
+
+
+----
+
+# NOTES
+To debug, use automatically created debug script "run script dev" and set breakpoints
