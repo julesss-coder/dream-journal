@@ -25,6 +25,7 @@ function App() {
   const [errorMessage, setErrorMessage] = useState('');
   const [isCloudView, setIsCloudView] = useState(false);
   const [tagCloudData, setTagCloudData] = useState([]);
+  const [filteredDreams, setFilteredDreams] = useState({currentTag: null, dreamIds: []});
 
   useEffect(() => {
     const fetchDreams = async () => {
@@ -240,15 +241,32 @@ function App() {
       }
     })
     .then(response =>  response.json())
-    .then(dreamsWithTag => {
-      console.log("dreams with tag from backend: ", dreamsWithTag);
+    .then(filteredDreamIds => {
+      setFilteredDreams(prevFilteredDreams => ({
+        ...prevFilteredDreams,
+        currentTag: tag.value,
+        dreamIds: filteredDreamIds.data
+      }));
+      setOpen(true);
+
+      // I don't need to fetch the current dreams from the backend, as the local state will be up-to-date after any change to a dream.
+
     })
     .catch(error => console.error(error));
+  };
+
+  const handleClearTagFilter = () => {
+    setFilteredDreams(prevFilteredDreams => ({
+      ...prevFilteredDreams,
+      currentTag: null, 
+      dreamIds: []
+    }));
   };
 
   console.log("dreams: ", dreams);
   console.log("selectedDreamId: ", selectedDreamId);
   console.log("isError: ", isError);
+  console.log("filteredDreams: ", filteredDreams);
 
   return (
     <Box
@@ -276,8 +294,14 @@ function App() {
       <Sider 
         open={open}
         setOpen={setOpen}
-        dreams={dreams}
+        dreams={
+          isCloudView === true && filteredDreams.dreamIds.length > 0 ?
+          dreams.filter(dream => filteredDreams.dreamIds.includes(dream.dream_id)) :
+          dreams
+        }
         handleDreamClick={handleDreamClick}
+        currentTag={filteredDreams.currentTag}
+        handleClearTagFilter={handleClearTagFilter}
       />
       
       {/* Tag Cloud */}

@@ -8,12 +8,18 @@ import ListItemButton from '@mui/joy/ListItemButton';
 import Search from '@mui/icons-material/Search';
 import ClearIcon from '@mui/icons-material/Clear';
 import Box from '@mui/joy/Box';
+import Clear from '@mui/icons-material/Clear';
+import IconButton from '@mui/joy/IconButton';
+
+
 
 function Sider({ 
   open,
   setOpen,
   dreams,
-  handleDreamClick
+  handleDreamClick,
+  currentTag,
+  handleClearTagFilter
 }) {
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -88,6 +94,19 @@ function Sider({
           },
         }}
       />
+      { 
+      currentTag && (
+        <>
+          <Typography>Dreams filtered by tag "{currentTag}":</Typography>
+          {/* Insert clear icon */}
+          <IconButton
+            onClick={handleClearTagFilter}
+            >
+            Clear tag
+          </IconButton>
+        </>
+      ) 
+      }
       <List
         size="lg"
         component="nav"

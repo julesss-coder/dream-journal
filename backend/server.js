@@ -276,9 +276,8 @@ app.get("/getDreamsWithTag", (request, response) => {
   sql = mySQL.format(sql, [tag]);
   return query(sql)
   .then(dreamIds => {
-    let dreamIdsFilteredByTagText = dreamIds.map(id => id.dream_id);
-    console.log("dreamIdsFilteredByTagText", dreamIdsFilteredByTagText);
-
+    let dreamIdsFilteredByTagText = dreamIds.map(item => item.dream_id);
+    response.status(202).json({data: dreamIdsFilteredByTagText})
     })
     .catch(error => console.error(error));
 });

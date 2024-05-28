@@ -90,9 +90,9 @@ GROUP BY Tag;
 Select dreamId from dreamTags where tag = "money"
 
 # Requirements tag cloud
-- [ ] Clicking "cloud view" renders tag cloud in new view (sider still accessible)
-- [ ] The more dreams a tag is contained in, the bigger the tag text.
-- [ ] On clicking a tag, sidebar should list all dreams that contain this tag.
+- [x] Clicking "cloud view" renders tag cloud in new view (sider still accessible)
+- [x] The more dreams a tag is contained in, the bigger the tag text.
+- [*] On clicking a tag, sidebar should list all dreams that contain this tag.
 
 Suggested library: reacttagcloud: URL: https://www.npmjs.com/package/react-tagcloud. Requires value and count for each element of the cloud. Has onClick handler for each element. 
 

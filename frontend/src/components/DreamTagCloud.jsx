@@ -7,8 +7,8 @@ function DreamTagCloud({ tagCloudData, handleTagClick }) {
       maxSize={40}
       tags={tagCloudData}
       onClick={(tag) => handleTagClick(tag)}
-      shuffle={true}
-      randomSeed={Math.random()}
+      // shuffle={true}
+      // randomSeed={Math.random()}
       // custom random color options
       // see randomColor package: https://github.com/davidmerfield/randomColor
       colorOptions={{
