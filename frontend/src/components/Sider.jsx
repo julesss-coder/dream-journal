@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import Typography from '@mui/joy/Typography';
 import Drawer from '@mui/joy/Drawer';
 import ModalClose from '@mui/joy/ModalClose';
@@ -9,8 +9,8 @@ import Search from '@mui/icons-material/Search';
 import ClearIcon from '@mui/icons-material/Clear';
 import Box from '@mui/joy/Box';
 import Clear from '@mui/icons-material/Clear';
-import IconButton from '@mui/joy/IconButton';
-
+import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
+import '../App.css';
 
 
 function Sider({ 
@@ -72,7 +72,9 @@ function Sider({
           },
         }}
         sx={{
-          m: 3,
+          px: "6px",
+          py: "16px",
+          m: "16px",
           borderRadius: 0,
           borderBottom: '2px solid',
           borderColor: 'neutral.outlinedBorder',
@@ -96,15 +98,20 @@ function Sider({
       />
       { 
       currentTag && (
-        <>
-          <Typography>Dreams filtered by tag "{currentTag}":</Typography>
-          {/* Insert clear icon */}
-          <IconButton
+        <Box
+          sx={{
+            px: "6px",
+            py: "16px",
+            mx: "16px"
+          }}
+        >
+          <Typography level="body-sm">Dreams filtered by tag "{currentTag}":</Typography>
+          <Typography 
+            startDecorator={<CancelOutlinedIcon/>} 
+            level="body-sm"
             onClick={handleClearTagFilter}
-            >
-            Clear tag
-          </IconButton>
-        </>
+          >Clear tag</Typography>
+        </Box>
       ) 
       }
       <List
@@ -114,15 +121,17 @@ function Sider({
           flex: 'none',
           fontSize: 'lg',
           '& > div': { justifyContent: 'flex-start' },
+          m:"16px",
         }}
-      >
+        >
+          {/* Should general search go through tags, too? */}
         {
           searchTerm.length > 0 && (
             dreams.filter(dream => {
               return (
-                dream.title.toLowerCase().includes(searchTerm) ||
-                dream.description.toLowerCase().includes(searchTerm) ||
-                dream.thoughts.toLowerCase().includes(searchTerm) 
+                dream.title?.toLowerCase().includes(searchTerm) ||
+                dream.description?.toLowerCase().includes(searchTerm) ||
+                dream.thoughts?.toLowerCase().includes(searchTerm) 
                 // ||
                 // dream.tags.some(tag => tag.toLowerCase().includes(searchTerm))
               );
@@ -146,7 +155,7 @@ function Sider({
           searchTerm.length === 0 && (
             dreams.map(dream => (
               <ListItemButton
-                key={dream.id}
+                key={dream.dream_id}
                 onClick={(e) => handleDreamClick(dream.dream_id, e)}
               >
                 {
