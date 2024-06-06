@@ -23,6 +23,11 @@
 - [ ] Comment out unnecessary calls to setState()
 - [ ] Async in frontend (and backend): Decide between using then() and async/await. Read up on both.
 - [ ] Should I keep setting `dreams` in local state in case the database request goes wrong? Or if it does, would it not be better to let the user know instead of keeping working with data from local state?
+- [ ] Each dream in the sider should have a delete button next to it (in sider)
+- [ ] Add folders to file dreams in 
+- [ ] Add login and authentication BEFORE adding new app features!!
+- [ ] Implement 1) async/await for all async operations
+- [ ]  Implement 2) try/catch for all error handling / decide on one type of error handling
 
 ## General todos
 - [ ] Add complete error handling - send response to frontend

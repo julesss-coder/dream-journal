@@ -47,8 +47,9 @@ function App() {
       }
     };
 
-    // Once this is a fullstack project, this should run and fetch the updated dreams lit 1) on first render, 2) when a dream is added, 3) when a dream is deleted. 4) Also on every change to a dream? Debounce? Or only when navigating away from input field?  
-    // It should also run 5) when an error is thrown, to make sure that the local state and the database have the same data, 3) on a page refresh, 6) periodically, in case this app ever support real-time updates (for example, if multiple users can update the same dream at the same time).
+    // When a dream is added/deleted/edited, I don't send the updated data from the backend. Instead, I fetch the updated data from the frontend. Then I set the local state `dreams` to this new data.
+    // Reason: I want to make sure the frontend always displays the most up-to-date data.
+    // Alternative to possibly implement later: Web Sockets or Server Sent Events
     if (dreamsUpdated === true) {
       console.log("useEffect runs");
       fetchDreams();
@@ -56,6 +57,7 @@ function App() {
     }
   }, [dreamsUpdated]);
 
+  // - [ ] Tested
   const getLastDreamId = () => {
     let lastDreamId = -1;
     if (dreams.length > 0) {
@@ -66,7 +68,6 @@ function App() {
       });
     }
 
-    console.log("lastDreamId: ", lastDreamId);
     return lastDreamId;
   };
 
@@ -76,7 +77,6 @@ function App() {
     setIsCloudView(false);
   };
   
-  // TODO: Why does this return 0 as the `newDreamId` the first time it is called?
   const handleAddDream = () => {
     let newDreamId = getLastDreamId() + 1;
 
@@ -86,7 +86,7 @@ function App() {
       "title": "Untitled",
       "description": null,
       "thoughts": null,
-      // Will be set in backend
+      // `date_created` and `last_edited` will be set in backend
       "date_created": null,
       "last_edited": null,
     };
@@ -102,7 +102,6 @@ function App() {
     .then(data => console.log(data.message))
     .catch(error => console.error(error));
 
-    // setDreams(prevDreams => [...prevDreams, newDream]);
     setDreamsUpdated(true);
     setSelectedDreamId(newDreamId);
     setIsCloudView(false);
@@ -110,7 +109,6 @@ function App() {
 
   // Handles input in dream editor form, except for tag input (see `handleTagInput()`)
   const handleFormInput = (dreamId, prop, value) => {
-    console.log("handleFormInput() runs");
     fetch('http://localhost:8000/updateDreamLog', {
       method: 'PUT', 
       headers: {
@@ -122,37 +120,21 @@ function App() {
     .then(data => console.log(data.message))
     .catch(error => console.error(error));
 
-    // setDreams(prevDreams => {
-    //   return prevDreams.map(dream => {
-    //     if (dream.dream_id === dreamId) {
-    //       return {
-    //         ...dream,
-    //         [prop]: value,
-    //         lastEdited: new Date(Date.now()).toUTCString()
-    //       };
-    //     } else {
-    //       return dream;
-    //     }
-    //   });
-    // });
     setDreamsUpdated(true);
   };
 
   const handleTagInput = (dreamId, value) => {
-    console.log("handleTagInput() runs, dreamId, value: ", dreamId, value);
-
     // The filter operation needs to be done only the first time the tags are changed. After that, it is updated with the new tags and thus only contains entries for the current dreamId.
+    // TODO rename `tagsToUpdate` -> `previousTags`; rename `updatedTags` -> `newTags`
     let tagsToUpdate = tagData.filter(entry => entry.dream_id === dreamId);
-    console.log("tagsToUpdate: ", tagsToUpdate);
     // TODO filter out additional commas
     let updatedTags = value.split(", ").map(tag => tag.trim()).filter(tag => tag !== "");
     // Remove duplicate entries from `updatedTags`
     updatedTags = [...new Set(updatedTags)];
-    console.log("updatedTags: ", updatedTags);
 
-    // If there are the same number of or more tags than before:
-    // Replace the previous tags with the new ones
-    if (tagsToUpdate.length <= updatedTags.length) {
+    // If there are more tags, or the same number of tags as before the update:
+    // Update the already existing tags with the new tag text
+    if (updatedTags.length >= tagsToUpdate.length) {
       for (let i = 0; i < tagsToUpdate.length; i++) {
         tagsToUpdate[i].tag_text = updatedTags[i];
       }
@@ -217,7 +199,6 @@ function App() {
   };
 
   const handleCloudViewClick = () => {
-    console.log("handleCloudViewClick() runs");
     setIsCloudView(true);
 
     fetch('http://localhost:8000/tagCloudView', {
@@ -232,7 +213,6 @@ function App() {
   };
 
   const handleTagClick = (tag) => {
-    console.log("handleTagClick, tag: ", tag);
     fetch(`http://localhost:8000/getDreamsWithTag?tagValue=${encodeURIComponent(tag.value)}`, {
       method: 'GET',
       headers: {

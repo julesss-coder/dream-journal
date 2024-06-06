@@ -21,9 +21,6 @@ function DreamEditor({
 }) {
   let timer;
   
-  console.log("dreams in DreamEditor: ", dreams);
-  console.log("tagData in DreamEditor: ", tagData);
-
   const getCurrentTags = () => {
     const currentTags = [];
   
@@ -33,8 +30,6 @@ function DreamEditor({
           currentTags.push(entry.tag_text);
         }
       }
-  
-      console.log("currentTags: ", currentTags);
     }
     return currentTags;
   };
@@ -167,7 +162,7 @@ function DreamEditor({
                 id="dream-tags"
                 label="Dream tags"
                 defaultValue={getCurrentTags().join(", ")}
-                helperText="Use this format: tag, tagConsistingOfSeveralWords. Separate tags with comma."
+                helperText="Separate tags with comma."
                 onKeyUp={(e) => {
                   // Can I use the same timer as for the calls to `handleFormInput()`? I assume so, as the user can't trigger tag input and input in the other fields at the same time. 
                   clearTimeout(timer);
