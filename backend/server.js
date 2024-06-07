@@ -6,7 +6,7 @@ identification methods, passwords, etc. need to be configured for each user sepa
 
 require('dotenv').config();
 const cors = require("cors")
-const insertDummyDreams = require('./insertDummyDreams');
+// const insertDummyDreams = require('./insertDummyDreams');
 const mySQL = require('mysql');
 const express = require('express');
 const morgan = require('morgan');
@@ -163,12 +163,7 @@ app.post("/", (request, response) => {
 });
 
 // Delete a dream
-/*
-Delete the dream with the given id from table `dream_log`
-
-In `dream_tags`: 
-  Delete all entries with the given dream_id
-*/
+// TODO When debugging this script, the debugger jumps into the catch() method before jumping into the first then(), but it doesn't log an error. The debugger settings are not set to pause on all exceptions nor cuaght exceptions, so I don't know what causes this issue. The delete request is performed successfully in any case.
 app.delete("/", (request, response) => {
   const {dreamId} = request.body;
 
@@ -185,7 +180,14 @@ app.delete("/", (request, response) => {
     console.log(`Successfully deleted entry in 'dream_tags' with dream_id ${dreamId}.`);
     response.status(200).json({message: `Successfully deleted dream with dream_id ${dreamId} and its tags.`});
   })
-  .catch(error => console.error(error));
+  .catch(error => {
+    console.log("Entered catch block");
+    if (!error) {
+      console.log("Error is undefined or null");
+    } else {
+      console.error("Error: ", error);
+    }
+  });
 });
 
 // Update a dream (excluding the dream tags)

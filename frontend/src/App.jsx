@@ -1,3 +1,5 @@
+// GOAL: Finish testing and correcting functions in app.jsx
+
 import React, { useEffect, useState } from 'react';
 import './App.css';
 
@@ -9,6 +11,7 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import BubbleChartIcon from '@mui/icons-material/BubbleChart';
 import IconButton from '@mui/joy/IconButton';
 import Menu from '@mui/icons-material/Menu';
+import { ColorRing } from 'react-loader-spinner';
 
 // Custom component imports
 import DreamEditor from './components/DreamEditor.jsx';
@@ -16,6 +19,7 @@ import Sider from './components/Sider.jsx';
 import DreamTagCloud from './components/DreamTagCloud.jsx';
 
 function App() {
+  const [loading, setLoading] = useState(false);
   const [dreams, setDreams] = useState([]);
   const [open, setOpen] = React.useState(false);
   const [selectedDreamId, setSelectedDreamId] = useState(null);
@@ -41,6 +45,7 @@ function App() {
         setTagData(Object.values(data.tags));
         setDreams(Object.values(data.dreams));
         setIsError(false);
+        setLoading(false);
       } catch (error) {
         console.error('A problem occurred when fetching the data: ', error);
         setIsError(true);
@@ -53,12 +58,13 @@ function App() {
     // Alternative to possibly implement later: Web Sockets or Server Sent Events
     if (dreamsUpdated === true) {
       console.log("useEffect runs");
+      setLoading(true)
       fetchDreams();
       setDreamsUpdated(false);
     }
   }, [dreamsUpdated]);
 
-  // - [ ] Tested
+  // - [x] OK
   const getLastDreamId = () => {
     let lastDreamId = -1;
     if (dreams.length > 0) {
@@ -92,6 +98,7 @@ function App() {
       "last_edited": null,
     };
 
+    setLoading(true);
     fetch('http://localhost:8000', {
       method: 'POST', 
       headers: {
@@ -100,7 +107,10 @@ function App() {
       body: JSON.stringify(newDream),
     })
     .then(response => response.json())
-    .then(data => console.log(data.message))
+    .then(data => {
+      console.log(data.message);
+      setLoading(false);
+    })
     .catch(error => console.error(error));
 
     setDreamsUpdated(true);
@@ -118,47 +128,45 @@ function App() {
       body: JSON.stringify({dreamId, prop, value})
     })
     .then(response => response.json())
-    .then(data => console.log(data.message))
+    .then(data => {
+      console.log(data.message);
+      setDreamsUpdated(true);
+    })
     .catch(error => console.error(error));
 
-    setDreamsUpdated(true);
   };
 
+  // - [x] OK
   const handleTagInput = (dreamId, value) => {
-    // The filter operation needs to be done only the first time the tags are changed. After that, it is updated with the new tags and thus only contains entries for the current dreamId.
-    // TODO rename `tagsToUpdate` -> `previousTags`; rename `updatedTags` -> `newTags`
     let tagsToUpdate = tagData.filter(entry => entry.dream_id === dreamId);
-    // TODO filter out additional commas
-    let updatedTags = value.split(", ").map(tag => tag.trim()).filter(tag => tag !== "");
-    // Remove duplicate entries from `updatedTags`
-    updatedTags = [...new Set(updatedTags)];
+    let newTagTexts = value.split(", ").map(tag => tag.trim()).filter(tag => tag !== "");
+    // Remove duplicate entries from `newTagTexts`
+    newTagTexts = [...new Set(newTagTexts)];
 
-    // If there are more tags, or the same number of tags as before the update:
-    // Update the already existing tags with the new tag text
-    if (updatedTags.length >= tagsToUpdate.length) {
+    // If there are more new tags than old tags:
+    // Update the entries in `tagsToUpdate` with the new tag text in `newTagTexts`
+    if (newTagTexts.length >= tagsToUpdate.length) {
       for (let i = 0; i < tagsToUpdate.length; i++) {
-        tagsToUpdate[i].tag_text = updatedTags[i];
+        tagsToUpdate[i].tag_text = newTagTexts[i];
       }
       
       // For all the newly added tags, create new entries in tagsToUpdate
-      for (let i = tagsToUpdate.length; i < updatedTags.length; i++) {
-        let newTagEntry = {dream_id: dreamId, tag_id: null, tag_text: updatedTags[i]};
+      for (let i = tagsToUpdate.length; i < newTagTexts.length; i++) {
+        let newTagEntry = {dream_id: dreamId, tag_id: null, tag_text: newTagTexts[i]};
         tagsToUpdate.push(newTagEntry);
       }
     }
     // Else if there are fewer tags than before:
     // Replace, the previous tags with the new ones
-    else if (tagsToUpdate.length > updatedTags.length) {
-      for (let i = 0; i < updatedTags.length; i++) {
-        tagsToUpdate[i].tag_text = updatedTags[i];
+    else if (tagsToUpdate.length > newTagTexts.length) {
+      for (let i = 0; i < newTagTexts.length; i++) {
+        tagsToUpdate[i].tag_text = newTagTexts[i];
       }
 
       // Delete the rest of the previous tags
-      tagsToUpdate = tagsToUpdate.slice(0, updatedTags.length);
+      tagsToUpdate = tagsToUpdate.slice(0, newTagTexts.length);
     }
     
-    console.log("updated tagsToUpdate: ", tagsToUpdate);
-
     fetch('http://localhost:8000/updateDreamTags', {
       method: 'PUT', 
       headers: {
@@ -174,7 +182,9 @@ function App() {
     .catch(error => console.error(error));
   };
 
+
   const handleDeleteDream = () => {
+    setLoading(true);
     fetch('http://localhost:8000', {
       method: 'DELETE', 
       headers: {
@@ -183,16 +193,11 @@ function App() {
       body: JSON.stringify({dreamId: selectedDreamId})
     })
     .then(response => response.json())
-    .then(data => console.log(data.message))
+    .then(data => {
+      console.log(data.message);
+      setLoading(false);
+    })
     .catch(error => console.error(error));
-
-    // Update dreams
-    // Setting `dreams` in the local state triggers effect that fetches dreams from database, so it is not necessary. => How to solve this?
-    // setDreams(prevDreams => {
-    //   return prevDreams.filter(dream => {
-    //     return selectedDreamId !== dream.dream_id;
-    //   });
-    // });
 
     // Update tags
     setSelectedDreamId(null);
@@ -201,6 +206,7 @@ function App() {
 
   const handleCloudViewClick = () => {
     setIsCloudView(true);
+    setLoading(true);
 
     fetch('http://localhost:8000/tagCloudView', {
       method: 'GET'
@@ -209,11 +215,13 @@ function App() {
     .then(tagCountData => {
       console.log("tag cloud data from backend: ", tagCountData);
       setTagCloudData(tagCountData);
+      setLoading(false);
     })
     .catch(error => console.error(error));
   };
 
   const handleTagClick = (tag) => {
+    setLoading(true);
     fetch(`http://localhost:8000/getDreamsWithTag?tagValue=${encodeURIComponent(tag.value)}`, {
       method: 'GET',
       headers: {
@@ -228,6 +236,7 @@ function App() {
         dreamIds: filteredDreamIds.data
       }));
       setOpen(true);
+      setLoading(false);
 
       // I don't need to fetch the current dreams from the backend, as the local state will be up-to-date after any change to a dream.
 
@@ -244,9 +253,34 @@ function App() {
   };
 
   console.log("dreams: ", dreams);
+  console.log("tagData: ", tagData);
   console.log("selectedDreamId: ", selectedDreamId);
   console.log("isError: ", isError);
   console.log("filteredDreams: ", filteredDreams);
+
+  if (loading === true) {
+    console.log("==========LOADING===========");
+    return (
+      <Box
+        sx={{
+          height: "90vh",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center"
+        }}
+      >
+        <ColorRing
+          visible={true}
+          height="80"
+          width="80"
+          ariaLabel="color-ring-loading"
+          wrapperStyle={{}}
+          wrapperClass="color-ring-wrapper"
+          colors={['#e15b64', '#f47e60', '#f8b26a', '#abbd81', '#849b87']}
+        />
+      </Box>
+    );
+  } 
 
   return (
     <Box

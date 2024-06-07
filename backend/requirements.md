@@ -28,6 +28,7 @@
 - [ ] Add login and authentication BEFORE adding new app features!!
 - [ ] Implement 1) async/await for all async operations
 - [ ]  Implement 2) try/catch for all error handling / decide on one type of error handling
+- [x] Add loading animation while waiting for requests to come back from server
 
 ## General todos
 - [ ] Add complete error handling - send response to frontend
