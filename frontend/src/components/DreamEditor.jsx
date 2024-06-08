@@ -97,7 +97,7 @@ function DreamEditor({
               sx={{
                 display: "flex",
                 flexDirection: "column",
-                gap: "15px"
+                gap: "15px",
               }}
               // IDEA for later: The `onChange` event DOES bubble, so instead of debouncing `onFormInput` by just 100ms in the onChange handler, I could register changes in the form in this onChange handler for all form fields, and debounce it by 1000ms, and call it also when user leaves page (within useEffect cleanup function). 
               // onChange={(e) => console.log("onChange handler in form Box runs", e.bubbles, e.target.id, e.target.value)}
@@ -114,7 +114,7 @@ function DreamEditor({
                   timer = setTimeout(() => {
                     // Passing in e.target.value instead of `e`, as `e` is nullified after `handleFormInput` is invoked. `setTimeout` then runs with nullified event object, so that `e.target.value` does not contain user input.
                     handleFormInput(dream.dream_id, "title", e.target.value);
-                  }, 100);
+                  }, 300);
                 }}
               />
               <TextField
@@ -138,7 +138,7 @@ function DreamEditor({
                   timer = setTimeout(() => {
                     // Passing in e.target.value instead of `e`, as `e` is nullified after `handleFormInput` is invoked. `setTimeout` then runs with nullified event object, so that `e.target.value` does not contain user input.
                     handleFormInput(dream.dream_id, "description", e.target.value);
-                  }, 100);
+                  }, 300);
                 }}
                 multiline
                 fullWidth
@@ -152,7 +152,7 @@ function DreamEditor({
                   timer = setTimeout(() => {
                     // Passing in e.target.value instead of `e`, as `e` is nullified after `handleFormInput` is invoked. `setTimeout` then runs with nullified event object, so that `e.target.value` does not contain user input.
                     handleFormInput(dream.dream_id, "thoughts", e.target.value);
-                  }, 100);
+                  }, 300);
                 }}
                 multiline
                 fullWidth
@@ -172,6 +172,9 @@ function DreamEditor({
                 }}
                 fullWidth
                 multiline
+                sx={{
+                  paddingBottom: "80px"
+                }}
               />
             </Box>
           ))

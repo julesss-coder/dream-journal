@@ -30,6 +30,10 @@
 - [ ]  Implement 2) try/catch for all error handling / decide on one type of error handling
 - [x] Add loading animation while waiting for requests to come back from server
 
+## BUGS
+- [SOLVED] When deleting a dream, the dream is still listed in the sider.
+- [SOLVED] Upon deleting all dreams, restarting debugger, and clicking 'add dream', the new dream has the pre-filled tags alternateReality, dailyLife". The tag input should be empty.
+
 ## General todos
 - [ ] Add complete error handling - send response to frontend
 

@@ -78,12 +78,14 @@ function App() {
     return lastDreamId;
   };
 
+  // - [X] OK
   const handleDreamClick = (dreamId) => {
     setSelectedDreamId(dreamId);
     setOpen(false);
     setIsCloudView(false);
   };
   
+  // - [ ] OK
   const handleAddDream = () => {
     let newDreamId = getLastDreamId() + 1;
 
@@ -110,14 +112,14 @@ function App() {
     .then(data => {
       console.log(data.message);
       setLoading(false);
+      setDreamsUpdated(true);
+      setSelectedDreamId(newDreamId);
+      setIsCloudView(false);
     })
     .catch(error => console.error(error));
-
-    setDreamsUpdated(true);
-    setSelectedDreamId(newDreamId);
-    setIsCloudView(false);
   };
 
+  // -[x] OK
   // Handles input in dream editor form, except for tag input (see `handleTagInput()`)
   const handleFormInput = (dreamId, prop, value) => {
     fetch('http://localhost:8000/updateDreamLog', {
@@ -133,7 +135,6 @@ function App() {
       setDreamsUpdated(true);
     })
     .catch(error => console.error(error));
-
   };
 
   // - [x] OK
@@ -182,7 +183,7 @@ function App() {
     .catch(error => console.error(error));
   };
 
-
+  // - [x] OK
   const handleDeleteDream = () => {
     setLoading(true);
     fetch('http://localhost:8000', {
@@ -196,12 +197,11 @@ function App() {
     .then(data => {
       console.log(data.message);
       setLoading(false);
+      setDreamsUpdated(true);
+      // Update tags
+      setSelectedDreamId(null);
     })
     .catch(error => console.error(error));
-
-    // Update tags
-    setSelectedDreamId(null);
-    setDreamsUpdated(true);
   };
 
   const handleCloudViewClick = () => {
@@ -258,7 +258,7 @@ function App() {
   console.log("isError: ", isError);
   console.log("filteredDreams: ", filteredDreams);
 
-  if (loading === true) {
+  if (loading === true && isError === false) {
     console.log("==========LOADING===========");
     return (
       <Box
@@ -347,7 +347,8 @@ function App() {
           position: "fixed",
           top: "auto",
           bottom: 0,
-          width: "100%"
+          width: "100%",
+          backgroundColor: "#F0F4F8"
         }}
       >
         <BottomNavigationAction

@@ -17,6 +17,7 @@ app.use(express.json());
 app.use(cors());
 app.use(morgan('dev'));
 const util = require('util');
+const { th } = require('date-fns/locale');
 
 const connection = mySQL.createConnection({
   host: 'localhost',
@@ -101,9 +102,7 @@ connection.connect((error) => {
         (2, "celebrity"),
         (3, "winning"),
         (3, "money"),
-        (3, "lottery"),
-        (4, "alternateReality"), 
-        (4, "dailyLife")
+        (3, "lottery")
       `)
       .then(() => console.log('Dummy data inserted into table `dream_tags`.'));
     }
@@ -149,10 +148,10 @@ app.get('/', (request, response) => {
 app.post("/", (request, response) => {
   return query("SHOW DATABASES LIKE 'dreams'")
     .then(() => {
-      let sql = `INSERT INTO dream_log VALUES (?, ?, ?, ?, ?, NOW(), NULL)`;
-      let valuesToInsert = Object.values(request.body);
-      console.log("valuesToInsert: ", valuesToInsert);
-      sql = mySQL.format(sql, valuesToInsert);
+      let sql = `INSERT INTO dream_log (dream_id, user_id, title, description, thoughts, date_created, last_edited) VALUES (?, ?, ?, ?, ?, NOW(), NULL)`;
+      const {dream_id, user_id, title, description, thoughts} = request.body;
+      console.log(dream_id, user_id, title, description, thoughts);
+      sql = mySQL.format(sql, [dream_id, user_id, title, description, thoughts]);
       return query(sql);
     })
     .then(() => {
@@ -163,7 +162,7 @@ app.post("/", (request, response) => {
 });
 
 // Delete a dream
-// TODO When debugging this script, the debugger jumps into the catch() method before jumping into the first then(), but it doesn't log an error. The debugger settings are not set to pause on all exceptions nor cuaght exceptions, so I don't know what causes this issue. The delete request is performed successfully in any case.
+// BUG When debugging this script, the debugger jumps into the catch() method before jumping into the first then(), but it doesn't log an error. The debugger settings are not set to pause on all exceptions nor cuaght exceptions, so I don't know what causes this issue. The delete request is performed successfully in any case.
 app.delete("/", (request, response) => {
   const {dreamId} = request.body;
 
